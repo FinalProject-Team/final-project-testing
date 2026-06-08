@@ -1,0 +1,21 @@
+.rankingPage {
+  min-height: 100vh;
+  width: 100%;
+  padding: 30px;
+
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+
+  background-image:
+    linear-gradient(rgba(0, 200, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 200, 255, 0.05) 1px, transparent 1px);
+
+  background-size: 60px 60px;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+@media (max-width: 768px) {
+  .rankingPage {
+    padding: 20px 12px;
+  }
+}

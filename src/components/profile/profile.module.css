@@ -1,0 +1,35 @@
+.profileWrapper {
+  max-width: 1140px !important; /* هذا سيحدد العرض الأقصى */
+  width: 90% !important;        /* هذا سيجعله 90% من العرض */
+  margin: 0 auto !important;    /* هذا سيضعه في المنتصف */
+  padding: 0 20px;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1fr; /* عمود واحد في الموبايل */
+  gap: 24px; 
+  width: 100%;
+  margin-bottom: 24px; 
+}
+
+.leftColumn, .rightColumn {
+  width: 100%;
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px; 
+}
+
+.bottomSection {
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  .mainGrid {
+    grid-template-columns: 1.15fr 0.85fr; /* توزيع الأعمدة في الشاشات الكبيرة */
+    gap: 32px;
+  }
+}

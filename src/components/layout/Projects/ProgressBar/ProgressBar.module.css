@@ -1,0 +1,26 @@
+.wrapper { display: flex; flex-direction: column; gap: 7px; }
+
+.labelRow {
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+.label {
+  font-size: 10.5px; color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.percent {
+  font-size: 11px; font-family: 'JetBrains Mono', monospace; font-weight: 700;
+}
+
+.track {
+  height: 4px;
+  background: rgba(255,255,255,0.055);
+  border-radius: 99px; overflow: hidden;
+}
+
+.fill {
+  height: 100%; border-radius: 99px;
+  animation: progressFill 1s cubic-bezier(0.4,0,0.2,1) forwards;
+}

@@ -1,0 +1,145 @@
+.courseCard {
+  padding: 22px;
+  border-radius: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.courseCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--course-color);
+  box-shadow: 0 0 24px color-mix(
+    in srgb,
+    var(--course-color) 25%,
+    transparent
+  );
+}
+.courseCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--course-color);
+  box-shadow: 0 0 24px color-mix(
+    in srgb,
+    var(--course-color) 25%,
+    transparent
+  );
+}
+
+.lockedCard {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.lockedCard:hover {
+  transform: none;
+  box-shadow: var(--shadow-card);
+  border-color: var(--border-primary);
+}
+
+.courseHeader {
+  display: flex;
+  gap: 15px;
+}
+
+.courseIcon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.courseContent h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.courseContent p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.courseDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.courseDetails span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.tags span {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.expanded {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-primary);
+}
+
+.expanded p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.footer button {
+  flex: 1;
+  border: none;
+  padding: 11px 18px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+  color: white;
+  font-weight: 700;
+}
+
+.xp {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--accent-gold);
+  font-size: 14px;
+}
+
+@media (max-width: 576px) {
+  .courseCard {
+    padding: 18px;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .xp {
+    justify-content: center;
+  }
+}

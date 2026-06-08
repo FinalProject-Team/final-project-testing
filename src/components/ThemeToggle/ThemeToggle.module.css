@@ -1,0 +1,31 @@
+.themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--border-primary);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  padding: 0;
+}
+
+.themeToggle:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-hover);
+  color: var(--accent-cyan);
+}
+
+.themeToggle:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 640px) {
+  .themeToggle {
+    width: 36px;
+    height: 36px;
+  }
+}

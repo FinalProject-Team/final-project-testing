@@ -1,0 +1,82 @@
+.container {
+  border-color: #334155;
+  padding: 30px 40px; 
+  border-radius: 16px;
+  color: white;
+  width: 100%; 
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 20px;
+}
+
+.title { 
+  margin-bottom: 40px; 
+  font-size: 1.25rem; 
+  font-weight: 500;
+  color: #e2e8f0;
+}
+.container:hover {
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+  transform: translateY(-5px);
+  cursor: pointer;
+}
+
+
+
+.chart {
+  display: flex;
+  justify-content: space-around; /* توزيع الأعمدة بمسافات متساوية بينها */
+  align-items: flex-end;
+  height: 200px; /* زيادة الارتفاع ليكون الرسم أكبر */
+  margin-top: 40px;
+}
+
+.barGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1; /* تجعلهم يتمددون بالتساوي */
+  max-width: 80px; /* تحديد أقصى عرض للعمود الواحد */
+  position: relative;
+  padding: 10px;
+}
+
+/* المربع الذي يظهر عند الوقوف على اليوم */
+.barGroup:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* الـ Tooltip */
+.barGroup:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: -45px;
+  background: #1a1c22;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  border: 1px solid #00d8ff;
+  box-shadow: 0 0 10px rgba(0, 216, 255, 0.5);
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.bar {
+  width: 100%; /* العمود يأخذ عرض الـ barGroup */
+  max-width: 40px; /* عرض العمود نفسه */
+  background: linear-gradient(to top, #00d8ff, #0077ff);
+  border-radius: 8px 8px 0 0;
+  transition: all 0.3s ease;
+}
+
+/* تأثير العمود الأبيض عند الوقوف عليه */
+.barGroup:hover .bar {
+  background: white;
+  box-shadow: 0 0 15px white;
+  transform: scaleY(1.02);
+}
+
+.label { font-size: 0.8rem; color: #888; margin-top: 10px; }

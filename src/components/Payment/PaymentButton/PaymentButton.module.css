@@ -1,0 +1,77 @@
+.root {
+  position: relative;
+  width: 100%;
+  padding: 16px 28px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-blue) 50%, var(--accent-purple) 100%);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  overflow: hidden;
+  transition: opacity var(--transition-fast), box-shadow var(--transition-med);
+  box-shadow: 0 4px 24px rgba(0, 200, 255, 0.3), 0 2px 8px rgba(0, 128, 255, 0.2);
+}
+
+.root:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.root:not(:disabled):hover .glowLayer {
+  opacity: 1;
+}
+
+.glowLayer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity var(--transition-med);
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.arrow {
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+}
+
+.root:not(:disabled):hover .arrow {
+  transform: translateX(3px);
+}
+
+.loaderWrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

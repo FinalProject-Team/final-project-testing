@@ -1,0 +1,104 @@
+.testimonials {
+  position: relative;
+  padding: 120px 2.5rem;
+  background: var(--bg-primary);
+  transition: background var(--transition);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 4.5rem;
+}
+
+.title {
+  font-size: clamp(2.25rem, 4vw, 3.25rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  transition: color var(--transition);
+}
+
+.gradient {
+  background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-blue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+  align-items: stretch;
+}
+
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-primary);
+  border-radius: 1.25rem;
+  padding: 2.25rem 2rem;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-5px);
+}
+
+.stars { display: flex; gap: 0.25rem; }
+
+.star { color: var(--accent-gold); fill: var(--accent-gold); width: 18px; height: 18px; }
+
+.quote {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin: 0;
+  font-style: italic;
+  flex: 1;
+  transition: color var(--transition);
+}
+
+.author { display: flex; align-items: center; gap: 1rem; margin-top: auto; }
+
+.avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--border-accent);
+  flex-shrink: 0;
+  object-fit: cover;
+  transition: border-color var(--transition);
+}
+
+.authorName {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  margin: 0 0 0.2rem;
+  transition: color var(--transition);
+}
+
+.authorRole {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin: 0;
+  transition: color var(--transition);
+}
+
+@media (max-width: 1024px) { .grid { grid-template-columns: 1fr; max-width: 640px; } }
+
+@media (max-width: 768px) {
+  .testimonials { padding: 80px 1.5rem; }
+  .header { margin-bottom: 3rem; }
+  .grid { gap: 1.25rem; }
+}

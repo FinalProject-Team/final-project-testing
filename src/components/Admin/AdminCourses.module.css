@@ -1,0 +1,304 @@
+.coursesContainer {
+  padding: 100px 20px 20px 20px; 
+  box-sizing: border-box;
+}
+.headerSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.title {
+  color: #1e293b;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.subtitle {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  color: #06b6d4;
+}
+
+/* كارت الجدول والبحث */
+.tableCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f1f5f9;
+}
+
+/* صف البحث واستيعاب الزرار بجانبه */
+.searchRow {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.searchWrapper {
+  position: relative;
+  flex: 1;
+  min-width: 250px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 10px 10px 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  outline: none;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+  border-color: #06b6d4;
+}
+
+.statusSelect {
+  padding: 10px 15px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  outline: none;
+  background-color: #fff;
+  color: #334155;
+  cursor: pointer;
+}
+
+/* زرار الإضافة الجديد في صف البحث (مضمون الظهور) */
+.addBtnInRow {
+  background-color: #06b6d4;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(6, 182, 212, 0.15);
+}
+
+.addBtnInRow:hover {
+  background-color: #0891b2;
+  transform: translateY(-1px);
+}
+
+/* استايلات الجدول المعيارية */
+.customTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.thCourse { width: 35%; text-align: left; color: #64748b; padding-bottom: 12px; font-weight: 600; }
+.thInstructor { width: 20%; text-align: left; color: #64748b; padding-bottom: 12px; font-weight: 600; }
+.thPrice { width: 15%; text-align: left; color: #64748b; padding-bottom: 12px; font-weight: 600; }
+.thCreated { width: 15%; text-align: left; color: #64748b; padding-bottom: 12px; font-weight: 600; }
+.thActions { width: 15%; text-align: right; color: #64748b; padding-bottom: 12px; font-weight: 600; }
+
+.tableRow {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.2s ease;
+}
+
+.tableRow:hover {
+  background-color: #f8fafc;
+}
+
+.noData {
+  text-align: center;
+  padding: 24px 0;
+  color: #64748b;
+}
+
+/* 🌌 الـ Modals المشتركة بنظام طبقي ممتاز */
+.modalOverlay {
+  background-color: rgba(0, 0, 0, 0.65);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999 !important; /* لضمان الظهور فوق الـ Navigation وهيدر السيستم */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.modalDialog {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 15px;
+}
+
+.modalDialogSmall {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 15px;
+}
+
+.modalContent {
+  background-color: #1e293b;
+  color: #ffffff;
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+/* هيدر المودال وزر الإغلاق X الشيك */
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #334155;
+}
+
+.modalHeaderDelete {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #334155;
+  background-color: #271c1c;
+}
+
+.modalTitle {
+  color: #06b6d4;
+  font-weight: 600;
+  margin: 0;
+}
+
+.modalTitleDelete {
+  color: #ef4444;
+  font-weight: 600;
+  margin: 0;
+}
+
+.closeBtn {
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  padding: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.closeBtn:hover {
+  background-color: #334155;
+  color: #ffffff;
+}
+
+/* محتوى وجسم الفورم (تم إصلاح flex-direction بالكامل) */
+.modalBody {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modalBodyDelete {
+  padding: 24px 20px;
+  text-align: center;
+  color: #cbd5e1;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formLabel {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+/* الفوتر والأزرار التحكمية */
+.modalFooter, .modalFooterDelete {
+  padding: 15px 20px;
+  border-top: 1px solid #334155;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background-color: #111827;
+}
+
+.cancelBtn {
+  background-color: #475569;
+  color: #ffffff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cancelBtn:hover {
+  background-color: #334155;
+}
+
+.saveBtn {
+  background-color: #06b6d4;
+  color: #ffffff;
+  border: none;
+  padding: 8px 22px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.saveBtn:hover {
+  background-color: #0891b2;
+}
+
+.confirmDeleteBtn {
+  background-color: #ef4444;
+  color: #ffffff;
+  border: none;
+  padding: 8px 22px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.confirmDeleteBtn:hover {
+  background-color: #dc2626;
+}

@@ -1,0 +1,127 @@
+/* ─── Chatbot page fills the entire content area ────────────────────────────── */
+.page {
+  width: 100%;
+  flex: 1;                  /* grow to fill the Layout content area */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--bg-main, #020817);
+  overflow: hidden;         /* children handle their own scroll */
+  min-height: 0;            /* allow shrinking */
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 24px 0;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ─── Messages area: grows, scrolls, pushes input to bottom ─────────────────── */
+.messagesArea {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 4px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56,189,248,0.2) transparent;
+}
+
+.messagesArea::-webkit-scrollbar {
+  width: 5px;
+}
+.messagesArea::-webkit-scrollbar-thumb {
+  background: rgba(56,189,248,0.2);
+  border-radius: 10px;
+}
+
+/* ─── Sticky bottom area: input + chips, never scrolled away ────────────────── */
+.bottomArea {
+  flex-shrink: 0;
+  padding: 10px 4px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--bg-main, #020817);
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ─── User message row ───────────────────────────────────────────────────────── */
+.userRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.timeStamp {
+  font-size: 11px;
+  color: #7d8ea3;
+  opacity: 0.9;
+  margin-right: 8px;
+}
+
+.userBubble {
+  max-width: 680px;
+  width: fit-content;
+  background: linear-gradient(135deg, rgba(0,180,220,0.18), rgba(0,118,255,0.2));
+  border: 1px solid rgba(0,180,220,0.3);
+  border-radius: 18px 18px 4px 18px;
+  padding: 12px 16px;
+  color: #e8f6ff;
+  font-size: 14px;
+  line-height: 1.6;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  backdrop-filter: blur(10px);
+}
+
+/* ─── Error banner ───────────────────────────────────────────────────────────── */
+.errorBanner {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(239,68,68,0.12);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 0.82rem;
+  color: #fca5a5;
+  margin: 0 4px 8px;
+}
+
+.errorClose {
+  background: none;
+  border: none;
+  color: #fca5a5;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.errorClose:hover { background: rgba(239,68,68,0.15); }
+
+/* ─── History loading ────────────────────────────────────────────────────────── */
+.loadingHistory {
+  text-align: center;
+  padding: 24px;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.35);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,28 @@
+# Dependency directories (تجاهل الفولدر العملاق)
+node_modules/
+
+# Local environment variables (تجاهل ملفات الحماية السريّة)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Production build (تجاهل فولدر الـ build الناتج عن المشروع)
+dist/
+build/
+
+# IDE files (تجاهل ملفات الـ VS Code الشخصية)
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+node_modules/
+.env
+.env.local
+.env.development.local
+.env.production.local
+.vite/
+dist/

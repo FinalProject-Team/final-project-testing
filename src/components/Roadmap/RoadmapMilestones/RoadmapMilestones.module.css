@@ -1,0 +1,102 @@
+.section {
+  margin-bottom: 60px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+  transition: border-color var(--transition), background var(--transition), transform var(--transition);
+  animation: fadeInUp 0.45s ease both;
+  cursor: default;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+.cyanCard:hover { border-color: rgba(0, 212, 255, 0.3); background: var(--bg-card-hover); }
+.purpleCard:hover { border-color: rgba(168, 85, 247, 0.3); background: var(--bg-card-hover); }
+.lockedCard { opacity: 0.55; }
+.lockedCard:hover { transform: none; }
+
+.iconWrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cyanIcon {
+  background: rgba(0, 212, 255, 0.14);
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  color: var(--cyan);
+}
+
+.purpleIcon {
+  background: rgba(168, 85, 247, 0.14);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  color: var(--purple);
+}
+
+.lockedIcon {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.lockedCard .cardTitle {
+  color: var(--text-secondary);
+}
+
+.status {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.achieved { color: var(--cyan); }
+
+.purpleCard .achieved { color: var(--purple); }
+
+.locked { color: var(--text-muted); }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 400px) {
+  .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .card { padding: 20px 12px; }
+}

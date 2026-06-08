@@ -1,0 +1,60 @@
+.layout {
+  min-height: 100vh;
+  display: flex;
+  background: var(--bg-primary);
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+}
+
+.menuBtn {
+  display: none;
+}
+
+.overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .layout {
+    display: block;
+  }
+
+  .content {
+    padding: 90px 16px 24px;
+  }
+
+  .menuBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: fixed;
+    top: 16px;
+    left: 16px;
+
+    width: 48px;
+    height: 48px;
+
+    border: 1px solid var(--border-accent);
+    border-radius: 12px;
+
+    background: var(--bg-card);
+    color: var(--accent-cyan);
+
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1002;
+  }
+
+  .overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+  }
+}

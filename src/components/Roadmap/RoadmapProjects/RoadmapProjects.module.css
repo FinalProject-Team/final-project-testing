@@ -1,0 +1,159 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.col {}
+
+.colTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+/* Projects */
+.projectList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.projectCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color var(--transition), background var(--transition), transform var(--transition);
+  animation: fadeInUp 0.45s ease both;
+  cursor: pointer;
+}
+
+.projectCard:hover {
+  border-color: rgba(0, 180, 220, 0.25);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+.projectIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cyan);
+  flex-shrink: 0;
+}
+
+.projectInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.projectTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.projectTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  color: var(--cyan);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.projectMeta {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.projectXp {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cyan);
+  margin-bottom: 3px;
+}
+
+.projectLevel {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.beginner { color: #34d399; }
+.intermediate { color: #f59e0b; }
+.advanced { color: #f87171; }
+
+/* Tips */
+.tipsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tipCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  border-left-width: 3px;
+  transition: background var(--transition), transform var(--transition);
+  animation: fadeInUp 0.45s ease both;
+}
+
+.tipCard:hover {
+  background: var(--bg-card-hover);
+  transform: translateX(3px);
+}
+
+.cyanTip { border-left-color: var(--cyan); }
+.purpleTip { border-left-color: var(--purple); }
+.greenTip { border-left-color: var(--green); }
+
+.tipIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.cyanIcon { color: var(--cyan); }
+.purpleIcon { color: var(--purple); }
+.greenIcon { color: var(--green); }
+
+.tipText {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .grid { grid-template-columns: 1fr; }
+}

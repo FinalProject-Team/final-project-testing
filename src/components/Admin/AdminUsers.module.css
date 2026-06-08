@@ -1,0 +1,190 @@
+.usersContainer {
+  padding: 32px;
+  margin-top: 80px;
+}
+
+.title {
+  color: #1e293b;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.tableCard {
+  background-color: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.searchRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.searchWrapper {
+  position: relative;
+  flex: 1;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 16px 10px 44px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.searchInput:focus {
+  border-color: #0284c7;
+}
+
+.roleSelect {
+  width: 180px;
+  padding: 10px 16px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  color: #1e293b;
+  outline: none;
+  cursor: pointer;
+}
+
+.customTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.customTable th {
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #f1f5f9;
+  background-color: #ffffff;
+}
+
+.emptyMessage {
+  text-align: center;
+  color: #94a3b8;
+  padding: 48px 0;
+  font-size: 0.875rem;
+}
+
+/* الأنماط الخاصة بمودال الحذف */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.modalDialogSmall {
+  background: #1e1e24; 
+  border: 1px solid #3a3a43;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 450px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeaderDelete {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #3a3a43;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalTitleDelete {
+  color: #ff4d4d;
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: #8a8a93;
+  cursor: pointer;
+}
+
+.closeBtn:hover {
+  color: #fff;
+}
+
+.modalBodyDelete {
+  padding: 1.5rem;
+  color: #e4e4e6;
+  font-size: 0.95rem;
+}
+
+.modalFooterDelete {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #3a3a43;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.cancelBtn {
+  background: #2d2d35;
+  color: #cbd5e1;
+  border: 1px solid #4b4b53;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.confirmDeleteBtn {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.confirmDeleteBtn:hover {
+  background: #e03e3e;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}

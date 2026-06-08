@@ -1,0 +1,64 @@
+.topThree {
+  padding: 24px 0;
+}
+
+.userInfo {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.crown {
+  color: var(--accent-gold);
+  font-size: 26px;
+  margin-bottom: 6px;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent-amber);
+}
+
+.userInfo h5 {
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.userInfo span {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.podium {
+  border-radius: 18px 18px 0 0;
+  font-size: 26px;
+  font-weight: 800;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 22px;
+}
+
+.first {
+  height: 260px;
+  color: var(--accent-amber);
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.second {
+  height: 210px;
+  color: #9db4ff;
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.third {
+  height: 180px;
+  color: #e36a16;
+  background: rgba(227, 106, 22, 0.1);
+  border: 1px solid rgba(227, 106, 22, 0.22);
+}

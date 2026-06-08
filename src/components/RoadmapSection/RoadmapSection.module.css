@@ -1,0 +1,158 @@
+.locked {
+  opacity: 0.7;
+}
+
+.lockBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 77, 77, 0.12);
+  border: 1px solid rgba(255, 77, 77, 0.25);
+  color: #ff4d4d;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.roadmap {
+  width: 100%;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: var(--text-primary);
+}
+
+.timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.lessonWrapper {
+  position: relative;
+  padding-left: 40px;
+}
+
+.line {
+  position: absolute;
+  left: 11px;
+  top: 40px;
+  width: 2px;
+  height: calc(100% + 24px);
+  background: var(--accent-cyan);
+}
+
+.dot {
+  position: absolute;
+  left: 0;
+  top: 30px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 4px solid var(--accent-cyan);
+  background: var(--bg-primary);
+}
+
+.lessonCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: 24px;
+  padding: 24px;
+  transition: var(--transition);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.lessonCard:hover {
+  transform: translateY(-5px);
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.lessonHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.lessonLeft {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.number {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(162, 89, 255, 0.12);
+  border: 1px solid rgba(162, 89, 255, 0.3);
+  color: var(--accent-purple);
+  font-weight: bold;
+}
+
+.lessonLeft h3 {
+  color: var(--text-primary);
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+.lessonLeft p {
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+.lessonRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--text-primary);
+}
+
+.badge {
+  background: rgba(0, 255, 136, 0.12);
+  border: 1px solid rgba(0, 255, 136, 0.25);
+  color: var(--accent-green);
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.rotate {
+  transform: rotate(180deg);
+  transition: var(--transition);
+}
+
+.videoBox {
+  margin-top: 24px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border-primary);
+}
+
+.videoBox iframe {
+  width: 100%;
+  height: 450px;
+  border: none;
+}
+
+@media (max-width: 768px) {
+  .lessonHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .videoBox iframe {
+    height: 240px;
+  }
+}

@@ -1,0 +1,358 @@
+.dashboardContainer {
+  padding: 24px;
+  background-color: #0b0f17;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.welcomeBanner {
+  background-color: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: border-color 0.3s ease;
+}
+
+.welcomeBanner:hover {
+  border-color: #00b4d8;
+}
+
+.welcomeText h2 {
+  font-size: 24px;
+  margin: 8px 0;
+  font-weight: 600;
+}
+
+.welcomeText p {
+  color: #9ca3af;
+  margin: 0;
+  font-size: 14px;
+}
+
+.badge {
+  background-color: #1e293b;
+  color: #38bdf8;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.highlightBlue { color: #38bdf8; font-weight: 600; }
+.highlightYellow { color: #f59e0b; font-weight: 600; }
+
+.continueBtn {
+  background-color: #00b4d8;
+  color: #000000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.continueBtn:hover {
+  background-color: #38bdf8;
+  box-shadow: 0 0 15px rgba(0, 180, 216, 0.4);
+  transform: translateX(3px);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.statCard {
+  background-color: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.statCard:hover {
+  transform: translateY(-5px);
+  border-color: rgba(0, 180, 216, 0.5);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.statHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.icon { font-size: 18px; }
+.trendUp { color: #10b981; font-size: 14px; }
+
+.statCard h3 {
+  font-size: 22px;
+  margin: 0 0 4px 0;
+  font-weight: 700;
+}
+
+.statLabel {
+  color: #6b7280;
+  font-size: 12px;
+  margin: 0 0 8px 0;
+}
+
+.statSub { color: #3b82f6; font-size: 11px; }
+.progressText { color: #10b981; font-size: 11px; }
+.statSubGreen { color: #10b981; font-size: 11px; }
+
+.progressBarContainer {
+  width: 100%;
+  height: 6px;
+  background-color: #1f2937;
+  border-radius: 4px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, #00b4d8, #10b981);
+  width: 43%;
+  border-radius: 4px;
+  animation: fillProgress 1.5s ease-out forwards;
+}
+
+@keyframes fillProgress {
+  from { width: 0; }
+  to { width: 43%; }
+}
+
+.chartsRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+
+.chartCard {
+  background-color: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  overflow: hidden; 
+  position: relative;
+}
+
+.chartCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 180, 216, 0.3);
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.chartCard h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.percentageBadge {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+.svgContainer {
+  width: 100%;
+  height: 140px; 
+  position: relative;
+  overflow: hidden;
+}
+
+.lineChart {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.lineChart path {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: drawLine 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes drawLine {
+  to { stroke-dashoffset: 0; }
+}
+
+.chartDays {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 10px 0 10px;
+  color: #4b5563;
+  font-size: 11px;
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.radarContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 160px;
+  width: 100%;
+}
+
+.radarChart {
+  width: 100%;
+  height: 100%;
+  max-width: 180px;
+  max-height: 180px;
+  overflow: visible;
+}
+
+.radarChart .skillShape {
+  transform-origin: 100px 100px; 
+  animation: scaleRadar 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes scaleRadar {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.radarLabel {
+  fill: #6b7280;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.bottomGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.bottomCard {
+  background-color: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.bottomCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.cardHeaderWithIcon {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.bottomCard h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.headerIcon { color: #4b5563; font-size: 14px; }
+
+.scheduleItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 3px solid #3b82f6;
+  padding: 6px 0 6px 12px;
+  margin-bottom: 16px;
+  transition: all 0.2s ease;
+}
+
+.scheduleItem:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+  padding-left: 16px;
+}
+
+.scheduleItem:nth-child(3) { border-left-color: #ef4444; }
+.scheduleItem:nth-child(4) { border-left-color: #a855f7; }
+
+.scheduleLeft h5 {
+  margin: 0 0 4px 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.scheduleLeft span { color: #6b7280; font-size: 11px; }
+.tag { font-size: 10px; padding: 2px 8px; border-radius: 4px; }
+
+.lessonTag { background-color: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.examTag { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.mentorTag { background-color: rgba(168, 85, 247, 0.1); color: #a855f7; }
+
+.activityItem {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+  transition: transform 0.2s ease;
+}
+
+.activityItem:hover { transform: translateX(4px); }
+
+.activityIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+}
+
+.blueCircle { background-color: rgba(59, 130, 246, 0.1); }
+.yellowCircle { background-color: rgba(245, 158, 11, 0.1); }
+.purpleCircle { background-color: rgba(168, 85, 247, 0.1); }
+.greenCircle { background-color: rgba(16, 185, 129, 0.1); }
+
+.activityContent p { margin: 0; font-size: 12px; color: #d1d5db; }
+.activityContent span { color: #6b7280; font-size: 10px; }
+
+.recommendList { list-style: none; padding: 0; margin: 0; }
+.recommendList li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+.recommendList li:hover { transform: translateX(4px); }
+.recommendList p { margin: 0; flex-grow: 1; color: #d1d5db; }
+
+.bulletBlue { color: #3b82f6; font-size: 18px; }
+.bulletYellow { color: #f59e0b; font-size: 18px; }
+.bulletCyan { color: #06b6d4; font-size: 18px; }
+.bulletOrange { color: #f97316; font-size: 18px; }
+.xpGain { color: #f59e0b; font-weight: 600; font-size: 11px; }

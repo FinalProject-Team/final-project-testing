@@ -1,0 +1,190 @@
+.root {
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: 16px;
+  padding: 32px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Method Header */
+.methodHeader {
+  margin-bottom: 22px;
+}
+
+.methodTitle {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border-primary);
+  color: var(--text-secondary);
+  background: var(--bg-input);
+}
+
+.tabActive {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.35);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.08);
+}
+
+/* Form */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  border-radius: 10px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+  overflow: hidden;
+}
+
+.inputWrapper:hover {
+  background: var(--bg-input-hover);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.inputFocused {
+  border-color: var(--border-accent) !important;
+  box-shadow: var(--shadow-input-focus);
+  background: var(--bg-input-hover) !important;
+}
+
+.inputError {
+  border-color: rgba(248, 113, 113, 0.45) !important;
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.15) !important;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 13px;
+  color: var(--text-muted);
+  pointer-events: none;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.input {
+  width: 100%;
+  padding: 13px 14px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 14.5px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  caret-color: var(--accent-cyan);
+}
+
+/* When there's a leading icon, add left padding */
+.inputWrapper:has(.inputIcon) .input {
+  padding-left: 40px;
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+/* Card brand badge */
+.cardBrand {
+  position: absolute;
+  right: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--accent-cyan);
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+/* CVV toggle button */
+.cvvToggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  transition: color var(--transition-fast);
+}
+
+.cvvToggle:hover {
+  color: var(--text-secondary);
+}
+
+/* Two-column row */
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Error message */
+.errorMsg {
+  font-size: 11.5px;
+  color: #f87171;
+  font-weight: 400;
+  padding-left: 2px;
+}
+
+/* Badges */
+.badges {
+  padding-top: 4px;
+  border-top: 1px solid var(--border-primary);
+  padding-top: 20px;
+}

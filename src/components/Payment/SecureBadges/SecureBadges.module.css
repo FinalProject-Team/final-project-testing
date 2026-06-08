@@ -1,0 +1,28 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent-teal);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  opacity: 0.9;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.label {
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+}

@@ -1,0 +1,10 @@
+.layoutWrapper {
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.mainContent {
+  margin-left: 256px;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}

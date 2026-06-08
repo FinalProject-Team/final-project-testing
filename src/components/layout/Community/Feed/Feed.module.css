@@ -1,0 +1,184 @@
+.feed {
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* Create Post */
+.createPost {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  backdrop-filter: blur(12px);
+  transition: border-color var(--transition);
+}
+
+.createPost:hover { border-color: var(--border-active); }
+
+.createTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1.5px solid var(--border);
+}
+
+.createInput {
+  flex: 1;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 16px;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: inherit;
+}
+
+.createInput:hover {
+  border-color: var(--border-active);
+  color: var(--text-secondary);
+}
+
+.createActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.createBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  transition: all var(--transition);
+}
+
+.createBtn:hover {
+  border-color: var(--border-active);
+  color: var(--neon);
+  background: rgba(79,142,247,0.07);
+}
+
+.postBtn {
+  margin-left: auto;
+  padding: 6px 18px;
+  background: linear-gradient(135deg, #1d4ed8, #4f8ef7);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 4px 16px rgba(79,142,247,0.3);
+  transition: all var(--transition);
+}
+
+.postBtn:hover {
+  box-shadow: 0 6px 24px rgba(79,142,247,0.5);
+  transform: translateY(-1px);
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  backdrop-filter: blur(10px);
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  border: 1px solid transparent;
+  background: none;
+  font-family: inherit;
+}
+
+.filterBtn:hover {
+  color: var(--text-primary);
+  background: rgba(79,142,247,0.07);
+}
+
+.filterBtn.filterActive {
+  background: rgba(79,142,247,0.12);
+  border-color: var(--border-active);
+  color: var(--neon);
+}
+
+.filterSep {
+  display: inline-block;
+  height: 20px;
+  width: 1px;
+  background: var(--border);
+  margin: 0 4px;
+  vertical-align: middle;
+}
+
+.sortBtn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--transition);
+}
+
+.sortBtn:hover {
+  border-color: var(--border-active);
+  color: var(--text-primary);
+}
+
+.errorMsg {
+  text-align: center;
+  color: #f87171;
+  font-size: 0.8rem;
+  padding: 20px;
+}
+
+/* ── Sort dropdown ── */
+.sortWrap { position: relative; margin-left: auto; }
+.sortMenu { position: absolute; top: 36px; right: 0; z-index: 50; background: rgba(10,20,45,0.98); border: 1px solid var(--border-active); border-radius: var(--radius-md); padding: 6px; min-width: 100px; box-shadow: 0 12px 40px rgba(0,0,0,0.4); animation: dropIn 0.15s ease; }
+@keyframes dropIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+.sortItem { display: block; width: 100%; padding: 7px 12px; border-radius: 7px; background: none; border: none; color: var(--text-secondary); font-size: 0.8rem; font-family: inherit; cursor: pointer; text-align: left; transition: all var(--transition); }
+.sortItem:hover { background: rgba(79,142,247,0.08); color: var(--text-primary); }

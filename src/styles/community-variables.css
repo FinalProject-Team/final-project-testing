@@ -1,0 +1,55 @@
+/* =====================================================
+   CareerTech – CSS Custom Properties
+   Dark (default) + Light theme via [data-theme="light"]
+   ===================================================== */
+
+:root,
+[data-theme="dark"] {
+  --bg-base:        #070d1a;
+  --bg-panel:       rgba(10,20,45,0.75);
+  --bg-card:        rgba(13,24,52,0.7);
+  --bg-input:       rgba(8,18,40,0.85);
+
+  --border:         rgba(79,142,247,0.15);
+  --border-active:  rgba(79,142,247,0.45);
+
+  --neon:           #4f8ef7;
+  --neon-glow:      0 0 18px rgba(79,142,247,0.45);
+
+  --text-primary:   #e8f0ff;
+  --text-secondary: #7a99cc;
+  --text-muted:     #3d5a8a;
+
+  --accent-green:   #34d399;
+  --accent-purple:  #a78bfa;
+  --accent-amber:   #fbbf24;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+[data-theme="light"] {
+  --bg-base:        #f0f4ff;
+  --bg-panel:       rgba(255,255,255,0.85);
+  --bg-card:        rgba(255,255,255,0.92);
+  --bg-input:       rgba(230,236,255,0.8);
+
+  --border:         rgba(79,142,247,0.18);
+  --border-active:  rgba(79,142,247,0.5);
+
+  --neon:           #2563eb;
+  --neon-glow:      0 0 16px rgba(37,99,235,0.3);
+
+  --text-primary:   #0f172a;
+  --text-secondary: #334e8a;
+  --text-muted:     #94a3b8;
+}
+
+/* Global scrollbar */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(79,142,247,0.25); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(79,142,247,0.45); }

@@ -1,0 +1,23 @@
+.progressWrapper {
+  margin-top: 18px;
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.progressTrack {
+  height: 7px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--bg-input);
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 999px;
+}

@@ -1,0 +1,106 @@
+.topbar{
+
+    height: 75px;
+
+    background-color: #081121;
+
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0 25px;
+}
+
+.title{
+
+    color: white;
+
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.rightSection{
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+}
+
+.searchBox{
+
+    width: 240px;
+    height: 42px;
+
+    background-color: rgba(255,255,255,0.05);
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 15px;
+}
+
+.searchBox input{
+
+    width: 100%;
+
+    background: transparent;
+    border: none;
+    outline: none;
+
+    color: white;
+
+    margin-left: 10px;
+}
+
+.searchBox input::placeholder{
+
+    color: #64748b;
+}
+
+.searchIcon{
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+.notification{
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 12px;
+
+    background-color: rgba(255,255,255,0.05);
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: white;
+
+    font-size: 22px;
+
+    cursor: pointer;
+}
+
+.profile img{
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 14px;
+
+    object-fit: cover;
+
+    cursor: pointer;
+}

@@ -1,0 +1,280 @@
+.postCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  backdrop-filter: blur(12px);
+  transition: all var(--transition);
+  animation: fadeUp 0.35s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.postCard:hover {
+  border-color: var(--border-active);
+  box-shadow: 0 4px 32px rgba(79, 142, 247, 0.08);
+}
+
+/* Header */
+.postHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-bottom: 12px;
+}
+
+.authorAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1.5px solid var(--border);
+  flex-shrink: 0;
+}
+
+.authorInfo { flex: 1; }
+
+.authorRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.authorName {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.verifiedBadge {
+  color: var(--neon);
+  font-size: 0.8rem;
+}
+
+.authorRole {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.postTime {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+}
+
+/* Type Badge */
+.typeBadge {
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.typeDiscussion { background: rgba(79,142,247,0.12); color: var(--neon);          border: 1px solid rgba(79,142,247,0.3); }
+.typeShowcase   { background: rgba(167,139,250,0.12); color: var(--accent-purple); border: 1px solid rgba(167,139,250,0.3); }
+.typePoll       { background: rgba(52,211,153,0.10);  color: var(--accent-green);  border: 1px solid rgba(52,211,153,0.25); }
+.typeArticle    { background: rgba(251,191,36,0.10);  color: var(--accent-amber);  border: 1px solid rgba(251,191,36,0.25); }
+.typeJob        { background: rgba(248,113,113,0.10); color: #f87171;              border: 1px solid rgba(248,113,113,0.25); }
+
+.moreBtn {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.moreBtn:hover {
+  background: var(--bg-panel);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+/* Content */
+.content {
+  font-size: 0.86rem;
+  color: var(--text-primary);
+  line-height: 1.65;
+  white-space: pre-line;
+  margin-bottom: 12px;
+}
+
+/* Tags */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.tag {
+  font-size: 0.73rem;
+  color: var(--neon);
+  background: rgba(79,142,247,0.08);
+  border: 1px solid rgba(79,142,247,0.18);
+  padding: 2px 9px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.tag:hover { background: rgba(79,142,247,0.18); }
+
+/* Image */
+.postImage {
+  width: 100%;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  max-height: 260px;
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+  display: block;
+}
+
+/* Read time */
+.readTimeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.73rem;
+  color: var(--accent-amber);
+  background: rgba(251,191,36,0.08);
+  border: 1px solid rgba(251,191,36,0.2);
+  padding: 3px 10px;
+  border-radius: 99px;
+  margin-bottom: 12px;
+}
+
+/* Job Details */
+.jobDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.jobDetail {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 7px;
+}
+
+/* Poll */
+.pollOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pollOption {
+  position: relative;
+  cursor: pointer;
+  border-radius: 9px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  transition: all var(--transition);
+}
+
+.pollOption:hover { border-color: var(--border-active); }
+
+.pollBar {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(79,142,247,0.18), rgba(79,142,247,0.08));
+  border-radius: 9px;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pollOptionContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+}
+
+.pollPercent {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--neon);
+}
+
+.pollMeta {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: none;
+  font-family: inherit;
+  transition: all var(--transition);
+}
+
+.actionBtn:hover {
+  background: rgba(79,142,247,0.07);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.actionBtn.liked { color: #f87171; }
+.actionBtn.saved { color: var(--accent-amber); }
+.actionSave      { margin-left: auto; }
+
+/* ── Menu ── */
+.menuWrap { position: relative; }
+.dropMenu { position: absolute; top: 36px; right: 0; z-index: 50; background: rgba(10,20,45,0.98); border: 1px solid var(--border-active); border-radius: var(--radius-md); padding: 6px; min-width: 140px; box-shadow: 0 12px 40px rgba(0,0,0,0.4); animation: dropIn 0.15s ease; }
+@keyframes dropIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+.dropItem { display: flex; align-items: center; gap: 7px; width: 100%; padding: 7px 12px; border-radius: 7px; background: none; border: none; color: var(--text-secondary); font-size: 0.8rem; font-family: inherit; cursor: pointer; transition: all var(--transition); text-align: left; }
+.dropItem:hover { background: rgba(79,142,247,0.08); color: var(--text-primary); }
+.dropDanger { color: #f87171 !important; }
+.dropDanger:hover { background: rgba(248,113,113,0.08) !important; }
+
+/* ── Poll voted state ── */
+.pollVoted { cursor: default !important; }
+.pollVoted:hover { border-color: var(--border) !important; }
+
+/* ── Comment active ── */
+.commentActive { color: var(--neon) !important; background: rgba(79,142,247,0.07) !important; border-color: var(--border) !important; }

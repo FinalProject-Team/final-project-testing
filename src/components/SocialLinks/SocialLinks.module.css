@@ -1,0 +1,91 @@
+
+.socialCard {
+  background: rgba(15, 20, 30, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 24px;
+  padding: 32px;
+  width: 100%;
+  max-width: 650px;
+  box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(16px);
+  transition: all 0.3s ease !important;
+}
+
+
+.socialCard:hover {
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.3) !important;
+  transform: translateY(-2px) !important;
+}
+
+.cardTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin-bottom: 28px;
+  text-align: left;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start !important;
+  width: 100%;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6B7280 !important;
+  letter-spacing: 0.5px;
+}
+
+
+.inputContainer {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+ 
+}
+
+
+.inputIcon {
+  position: absolute;
+  left: 16px;
+  color: #9CA3AF;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  
+}
+
+
+.inputField {
+  width: 100% !important;
+  background: rgba(11, 15, 25, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px;
+  padding: 12px 16px 12px 48px !important; 
+  color: #ffffff !important;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+
+.inputContainer:focus-within .inputIcon {
+  color: #22D3EE; 
+}
+
+.inputField:focus {
+  border-color: #22D3EE !important;
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.5) !important;
+  background: rgba(11, 15, 25, 0.95) !important;
+}

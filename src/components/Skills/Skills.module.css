@@ -1,0 +1,59 @@
+.skillsCard {
+  background-color: #121620;
+  border: 1px solid #1c2230;
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cardTitle {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 24px 0;
+  text-align: left;
+}
+
+
+.tagsWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-start;
+}
+
+
+.skillTag {
+  background-color: rgba(59, 130, 246, 0.08); 
+  color: #0099ff; 
+  border: 1px solid rgba(59, 130, 246, 0.25); 
+  padding: 8px 20px; 
+  border-radius: 50px; 
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.skillsCard {
+
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; 
+}
+
+.skillsCard:hover {
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.3) !important;
+  transform: translateY(-2px) !important;
+}
+
+
+.skillTag {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.skillTag:hover {
+  background-color: rgba(59, 130, 246, 0.2) !important; 
+  border-color: #0099ff !important; 
+  transform: translateY(-2px); 
+}

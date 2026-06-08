@@ -1,0 +1,238 @@
+.container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #0b111e; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.card {
+    background-color: #0d1527; 
+    border: 1px solid #16223f;
+    border-radius: 16px;
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+}
+
+.card:hover {
+    transform: scale(1.02); 
+    box-shadow: 0 15px 40px rgba(59, 130, 246, 0.15); 
+}
+
+.title {
+    color: #799fc1; 
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    letter-spacing: 0.5px;
+}
+
+.subtitle {
+    color: #566785;
+    font-size: 13px;
+    margin-bottom: 30px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px; 
+}
+
+.inputGroup {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.iconLeft {
+    position: absolute;
+    left: 14px;
+    color: #4a5a75;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.iconRight {
+    position: absolute;
+    right: 14px;
+    color: #4a5a75;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.iconRight:hover {
+    color: #799fc1;
+}
+
+.input {
+    width: 100%;
+    background-color: #0a0f1d;
+    border: 1px solid #1a2647;
+    border-radius: 8px;
+    padding: 14px 14px 14px 42px; 
+    color: #ffffff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.inputPassword {
+    padding-right: 42px;
+}
+
+.input::placeholder {
+    color: #4a5a75;
+}
+
+.input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.btnLink {
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
+
+.btn {
+    width: 100%; 
+    background: linear-gradient(to right, #4c7293, #81a4c4);
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.btnIcon {
+    font-size: 16px;
+}
+
+.btn:hover {
+    opacity: 0.95;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.footerText {
+    color: #566785;
+    font-size: 13px;
+    margin-top: 25px;
+}
+
+.loginLink {
+    color: #4c7293;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 5px;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.loginLink:hover {
+    color: #81a4c4;
+    text-decoration: underline;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #4a5a75;
+    font-size: 12px;
+    margin: 15px 0;
+}
+
+.divider::before,.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #1a2647;
+}
+
+.divider:not(:empty)::before {
+    margin-right: .25em;
+}
+
+.divider:not(:empty)::after {
+    margin-left: .25em;
+}
+
+.googleBtn {
+    width: 100%;
+    background-color: #0a0f1d; 
+    border: 1px solid #1a2647;
+    border-radius: 8px;
+    padding: 14px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.googleBtn:hover {
+    background-color: #111a30;
+    border-color: #3b82f6;
+}
+
+.googleIcon {
+    font-size: 20px; 
+}
+
+.errorText {
+    color: #8d2f4f;
+    font-size: 0.85rem;
+    margin: -8px 0 12px 5px;
+    text-align: left;
+}
+
+.toast {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  text-align: left;
+  animation: slideIn 0.3s ease-out;
+}
+
+.toastSuccess {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.toastError {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

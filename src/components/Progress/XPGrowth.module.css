@@ -1,0 +1,57 @@
+.chartContainer {
+  background-color: #0b0f19;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 24px auto 0 auto;
+  box-sizing: border-box;
+  
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.chartTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.growthBadge {
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chartWrapper {
+  width: 100%;
+ 
+  background-image: 
+    linear-gradient(rgba(30, 41, 59, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 41, 59, 0.15) 1px, transparent 1px);
+  background-size: 40px 40px; 
+}
+.chartContainer {
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+
+.chartContainer {
+  transition: all 0.3s ease; 
+}
+
+.chartContainer:hover {
+   box-shadow: 0 0 20px rgba(34, 211, 238, 0.3) !important;
+  transform: translateY(-2px) !important;  
+}

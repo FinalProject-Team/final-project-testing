@@ -1,0 +1,173 @@
+.sidebar {
+  width: 320px;
+  min-height: 100vh;
+
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-primary);
+
+  padding: 28px 20px;
+
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+
+  position: relative;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  margin-bottom: 40px;
+}
+
+.logoIcon {
+  width: 56px;
+  height: 56px;
+
+  border-radius: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(
+    135deg,
+    var(--accent-cyan),
+    var(--accent-blue)
+  );
+
+  color: white;
+}
+
+.logo h2 {
+  color: var(--text-primary);
+  font-size: 32px;
+  margin-bottom: 4px;
+}
+
+.logo p {
+  color: var(--text-secondary);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 18px;
+
+  border-radius: 16px;
+
+  color: var(--text-secondary);
+  font-weight: 600;
+
+  transition: var(--transition);
+}
+
+.link:hover {
+  background: var(--bg-tertiary);
+  color: var(--accent-cyan);
+}
+
+.active {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-accent);
+  color: var(--accent-cyan);
+}
+
+.userBox {
+  margin-top: auto;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 18px;
+
+  border-radius: 18px;
+
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+
+  border-radius: 50%;
+
+  background: var(--accent-cyan);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: white;
+  font-weight: 700;
+}
+
+.userBox h4 {
+  color: var(--text-primary);
+}
+
+.userBox p {
+  color: var(--text-secondary);
+}
+
+.closeBtn {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 280px;
+
+    z-index: 1001;
+
+    transform: translateX(-100%);
+    transition: 0.3s ease;
+  }
+
+  .open {
+    transform: translateX(0);
+  }
+
+  .closeBtn {
+    display: flex;
+
+    position: absolute;
+    top: 16px;
+    right: 16px;
+
+    width: 38px;
+    height: 38px;
+
+    border: 1px solid var(--border-accent);
+    border-radius: 10px;
+
+    background: var(--bg-card);
+    color: var(--accent-cyan);
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .logo h2 {
+    font-size: 26px;
+  }
+}
