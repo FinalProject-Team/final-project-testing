@@ -1,134 +1,237 @@
 import React, { useState, useEffect } from 'react';
-import { Users, GraduationCap, UserCheck, BookOpen, FileText, TrendingUp, Activity } from 'lucide-react';
-import styles from './AdminDashboard.module.css';
+import { Trash2, Edit2, Check, X } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom'; // 👈 1. استدعينا الـ Context لقراءة نص البحث من الـ Topbar
+import styles from './AdminUsers.module.css';
 import api from './adminApi';
 
-export default function AdminDashboard() {
-  // 1️⃣ تعريف الـ States لتخزين البيانات وحالة التحميل
-  const [stats, setStats] = useState({
-    totalCourses: 0,
-    totalLessons: 0,
-    totalUsers: 0
-  });
+export default function AdminUsers() {
+  // --- 1️⃣ تعريف الـ States ---
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [roleFilter, setRoleFilter] = useState('all');
+  
+  // 👈 2. لقطنا الـ searchQuery الموحدة وشيلنا الـ searchTerm القديمة تماماً
+  const { searchQuery } = useOutletContext(); 
 
-  // 2️⃣ استدعاء الـ API عند فتح الصفحة
-  useEffect(() => {
-    const fetchDashboardStats = async () => {
-      try {
-        setLoading(true);
-        // نداء على الـ URL المظبوط بناءً على السواجر
-        const response = await api.get('/api/admin/dashboard');
-        
-        // حفظ الداتا اللي راجعة جوه الـ state
-        if (response.data) {
-          setStats(response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching admin dashboard stats:", error);
-      } finally {
-        setLoading(false);
+  // States خاصة بتعديل الـ Role
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [selectedRole, setSelectedRole] = useState('');
+
+  // States جديدة مخصصة لمودال الحذف الاحترافي
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // --- 2️⃣ دالة جلب البيانات من الـ API ---
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/api/admin/users');
+      if (response.data) {
+        setUsers(response.data);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchDashboardStats();
+  useEffect(() => {
+    fetchUsers();
   }, []);
 
-  // 3️⃣ توزيع الداتا الحقيقية على الـ الكروت
-  const cards = [
-    { title: 'Total Users', count: stats.totalUsers, icon: <Users size={22} />, bgClass: styles.bgCyan },
-    { title: 'Students', count: stats.totalUsers, icon: <GraduationCap size={22} />, bgClass: styles.bgEmerald }, // تقدري تعدليها لو الـ API بقى يرجع طلاب منفصلين
-    { title: 'Instructors', count: 1, icon: <UserCheck size={22} />, bgClass: styles.bgOrange }, // داتا افتراضية أو تعدل لاحقاً
-    { title: 'Total Courses', count: stats.totalCourses, icon: <BookOpen size={22} />, bgClass: styles.bgIndigo },
-    { title: 'Total Lessons', count: stats.totalLessons, icon: <FileText size={22} />, bgClass: styles.bgCyanDark },
-  ];
+  // --- 3️⃣ دالة تحديث الـ Role (PUT) ---
+  const handleUpdateRole = async (userId) => {
+    try {
+      await api.put(`/api/admin/user/${userId}/role`, { role: selectedRole });
+      setUsers(users.map(user => user.id === userId ? { ...user, role: selectedRole } : user));
+      setEditingUserId(null); 
+    } catch (error) {
+      console.error('Error updating user role:', error);
+      alert('Failed to update role. Check admin permissions.');
+    }
+  };
 
-  // شكل لطيف أثناء التحميل بدل ما تظهر أصفار فجأة
+  // --- 4️⃣ دالت التحكم في مودال الحذف الحقيقي ---
+  const openDeleteModal = (user) => {
+    setUserToDelete(user);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setUserToDelete(null);
+    setIsDeleteModalOpen(false);
+  };
+
+  const confirmDeleteUser = async () => {
+    if (!userToDelete) return;
+    try {
+      await api.delete(`/api/admin/user/${userToDelete.id}`);
+      setUsers(users.filter(user => user.id !== userToDelete.id));
+      closeDeleteModal();
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      alert('Failed to delete user.');
+    }
+  };
+
+  // --- 5️⃣ الفلترة والبحث (Client-side Filtering) القارئ من التوب بار الرئيسي ---
+  const filteredUsers = users.filter((user) => {
+    const fullName = user.full_name || '';
+    const email = user.email || '';
+    const role = user.role || '';
+
+    // 🔍 3. تعديل الفلترة لتقرأ مباشرة من الـ searchQuery اللي جاية من فوق
+    const matchesSearch = fullName.toLowerCase().includes((searchQuery || '').toLowerCase()) || 
+                          email.toLowerCase().includes((searchQuery || '').toLowerCase());
+                          
+    const matchesRole = roleFilter === 'all' || role.toLowerCase() === roleFilter.toLowerCase();
+
+    return matchesSearch && matchesRole;
+  });
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh', color: 'white' }}>
         <div className="spinner-border text-info" role="status">
-          <span className="visually-hidden">Loading Dashboard Data...</span>
+          <span className="visually-hidden">Loading Users...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={styles.dashboardContainer}>
+    <div className={styles.usersContainer}>
       <div className="mb-4">
-        <h2 className={`h4 ${styles.title}`}>Dashboard Overview</h2>
-        <p className={styles.subtitle}>Welcome back! Here's what's happening with your platform.</p>
+        <h2 className={`h4 ${styles.title}`}>Users Management</h2>
+        <p className={styles.subtitle}>Manage all users, students, and instructors on the platform.</p>
       </div>
 
-      <div className="row g-3 mb-4 flex-nowrap overflow-auto">
-        {cards.map((card, i) => (
-          <div key={i} className="col" style={{ minWidth: '200px' }}>
-            <div className={`${styles.statCard} p-3 d-flex align-items-center justify-content-between`}>
-              <div>
-                <span className={`${styles.cardTitle} d-block mb-1`}>{card.title}</span>
-                <span className={styles.cardCount}>{card.count}</span>
-              </div>
-              <div className={`${styles.iconBox} ${card.bgClass}`}>
-                {card.icon}
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className={styles.tableCard}>
+        {/* شريط البحث والفلترة */}
+        <div className={styles.searchRow} style={{ justifyContent: 'flex-end' }}>
+          {/* 💡 شيلنا الـ Input القديم من هنا تماماً عشان نعتمد على شريط البحث الرئيسي في الـ Topbar */}
+
+          <select 
+            className={styles.roleSelect}
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+          >
+            <option value="all">All Roles</option>
+            <option value="student">Students</option>
+            <option value="instructor">Instructors</option>
+            <option value="admin">Admins</option>
+          </select>
+        </div>
+
+        {/* جدول عرض البيانات الحقيقية */}
+        <div className="table-responsive">
+          <table className={styles.customTable}>
+            <thead>
+              <tr>
+                <th style={{ width: '25%' }}>User</th>
+                <th style={{ width: '30%' }}>Email</th>
+                <th style={{ width: '20%' }}>Role</th>
+                <th style={{ width: '15%' }}>Joined</th>
+                <th style={{ width: '10%', textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredUsers.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="text-center py-4 text-muted">No users found</td>
+                </tr>
+              ) : (
+                filteredUsers.map((user) => (
+                  <tr key={user.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td className="py-3 fw-medium text-dark">{user.full_name || 'N/A'}</td>
+                    <td className="py-3 text-secondary">{user.email || 'No Email'}</td>
+                    
+                    {/* الـ Role مع إمكانية التعديل السريع */}
+                    <td className="py-3">
+                      {editingUserId === user.id ? (
+                        <div className="d-flex align-items-center gap-1">
+                          <select 
+                            className="form-select form-select-sm"
+                            style={{ maxWidth: '120px', fontSize: '0.85rem' }}
+                            value={selectedRole}
+                            onChange={(e) => setSelectedRole(e.target.value)}
+                          >
+                            <option value="student">Student</option>
+                            <option value="instructor">Instructor</option>
+                            <option value="admin">Admin</option>
+                          </select>
+                          <button className="btn btn-sm btn-success p-1 ms-1" onClick={() => handleUpdateRole(user.id)}><Check size={14} /></button>
+                          <button className="btn btn-sm btn-secondary p-1" onClick={() => setEditingUserId(null)}><X size={14} /></button>
+                        </div>
+                      ) : (
+                        <span className={`badge ${
+                          user.role?.toLowerCase() === 'admin' ? 'bg-danger-subtle text-danger' :
+                          user.role?.toLowerCase() === 'instructor' ? 'bg-primary-subtle text-primary' :
+                          'bg-success-subtle text-success'
+                        } px-2.5 py-1.5 rounded-3 fw-semibold`} style={{ fontSize: '0.75rem', textTransform: 'capitalize' }}>
+                          {user.role}
+                        </span>
+                      )}
+                    </td>
+
+                    {/* تاريخ الانضمام */}
+                    <td className="py-3 text-secondary">
+                      {user.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
+                    </td>
+                    
+                    {/* أزرار التحكم */}
+                    <td className="py-3 text-end">
+                      <button 
+                        className="btn btn-link text-primary p-1 me-2" 
+                        title="Edit Role"
+                        onClick={() => {
+                          setEditingUserId(user.id);
+                          setSelectedRole(user.role?.toLowerCase() || 'student');
+                        }}
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button 
+                        className="btn btn-link text-danger p-1" 
+                        title="Delete User"
+                        onClick={() => openDeleteModal(user)}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div className="row g-4">
-        <div className="col-md-8">
-          <div className={styles.sectionCard}>
-            <h3 className={styles.sectionTitle}>Platform Activity</h3>
-            <div>
-              <div className={styles.activityRow}>
-                <div className="d-flex align-items-center gap-3">
-                  <span className={styles.bullet} style={{ backgroundColor: '#34d399' }}></span>
-                  <span className="text-secondary" style={{ fontSize: '0.875rem' }}>New users registered today</span>
-                </div>
-                <span className="fw-bold text-dark" style={{ fontSize: '0.875rem' }}>{stats.totalUsers}</span>
+      {/* 📥 مودال تأكيد الحذف المودرن (HTML/CSS Modal) */}
+      {isDeleteModalOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalDialogSmall}>
+            <div className={styles.modalContent}>
+              <div className={styles.modalHeaderDelete}>
+                <h5 className={styles.modalTitleDelete}>⚠️ Confirm Delete</h5>
+                <button type="button" className={styles.closeBtn} onClick={closeDeleteModal}>
+                  <X size={20} />
+                </button>
               </div>
-              <div className={styles.activityRow}>
-                <div className="d-flex align-items-center gap-3">
-                  <span className={styles.bullet} style={{ backgroundColor: '#22d3ee' }}></span>
-                  <span className="text-secondary" style={{ fontSize: '0.875rem' }}>Courses published</span>
-                </div>
-                <span className="fw-bold text-dark" style={{ fontSize: '0.875rem' }}>{stats.totalCourses}</span>
+              <div className={styles.modalBodyDelete}>
+                <p>Are you sure you want to permanently delete this user account?</p>
+                <strong className="text-danger">{userToDelete?.full_name}</strong>
+                <p className="text-muted small mt-1">{userToDelete?.email}</p>
               </div>
-              <div className={styles.activityRow}>
-                <div className="d-flex align-items-center gap-3">
-                  <span className={styles.bullet} style={{ backgroundColor: '#818cf8' }}></span>
-                  <span className="text-secondary" style={{ fontSize: '0.875rem' }}>Lessons completed</span>
-                </div>
-                <span className="fw-bold text-dark" style={{ fontSize: '0.875rem' }}>{stats.totalLessons}</span>
+              <div className={styles.modalFooterDelete}>
+                <button type="button" className={styles.cancelBtn} onClick={closeDeleteModal}>Cancel</button>
+                <button type="button" className={styles.confirmDeleteBtn} onClick={confirmDeleteUser}>Yes, Delete</button>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="col-md-4">
-          <div className={styles.sectionCard}>
-            <h3 className={styles.sectionTitle}>Quick Stats</h3>
-            <div className="row g-3">
-              <div className="col-6">
-                <div className={`${styles.quickStatBox} ${styles.growthBox}`}>
-                  <TrendingUp style={{ color: '#06b6d4', marginBottom: '12px' }} size={20} />
-                  <span className="text-muted d-block mb-1" style={{ fontSize: '0.75rem' }}>Growth Rate</span>
-                  <span className="fw-bold" style={{ color: '#0891b2', fontSize: '1.125rem' }}>+12.5%</span>
-                </div>
-              </div>
-              <div className="col-6">
-                <div className={`${styles.quickStatBox} ${styles.activeUsersBox}`}>
-                  <Activity style={{ color: '#10b981', marginBottom: '12px' }} size={20} />
-                  <span className="text-muted d-block mb-1" style={{ fontSize: '0.75rem' }}>Active Users</span>
-                  <span className="fw-bold" style={{ color: '#059669', fontSize: '1.125rem' }}>{stats.totalUsers}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

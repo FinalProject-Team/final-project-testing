@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Edit2, Trash2, Plus, X } from 'lucide-react';
+import { Edit2, Trash2, Plus, X } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom'; // 👈 1. استدعينا الـ Context هنا
 import styles from './AdminLessons.module.css';
 
 import { supabase } from '../../components/layout/services/supabaseClient'; 
 
 export default function AdminLessons() {
   const [lessons, setLessons] = useState([]);
-  const [courses, setCourses] = useState([]); // لجلب الكورسات الحقيقية لربط الدروس بها
+  const [courses, setCourses] = useState([]); 
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedCourseFilter, setSelectedCourseFilter] = useState('all');
+
+  // 👈 2. لقطنا الـ searchQuery اللي بيكتبها المستخدم في الـ Topbar فوق
+  const { searchQuery } = useOutletContext(); 
 
   // ستيتس المودالات والتحكم
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,19 +21,18 @@ export default function AdminLessons() {
   const [lessonToDelete, setLessonToDelete] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  // ستيتس بيانات الفورم (تمت إزالة حقل order تماماً لتجنب الأخطاء)
+  // ستيتس بيانات الفورم
   const [formData, setFormData] = useState({
     title: '',
     course_id: '',
     duration: ''
   });
 
-  // 🔄 جلب الدروس والكورسات المصلحة بدون الترتيب مع تحديد الحقول الصالحة فقط
+  // 🔄 جلب الدروس والكورسات
   const fetchData = async () => {
     try {
       setLoading(true);
 
-      // 1. جلب الكورسات الحقيقية
       const { data: coursesData, error: coursesError } = await supabase
         .from('courses')
         .select('id, title');
@@ -38,7 +40,6 @@ export default function AdminLessons() {
       if (coursesError) throw coursesError;
       if (coursesData) setCourses(coursesData);
 
-      // 2. جلب الدروس مع تحديد الأعمدة الفردية الصالحة لمنع استدعاء order الممسوح
       const { data: lessonsData, error: lessonsError } = await supabase
         .from('lessons')
         .select('id, title, course_id, duration'); 
@@ -61,7 +62,7 @@ export default function AdminLessons() {
     fetchData();
   }, []);
 
-  // 💾 2. حفظ أو تحديث الدرس مباشرة في الداتابيز
+  // 💾 حفظ أو تحديث الدرس
   const handleSave = async (e) => {
     if (e) e.preventDefault();
     if (!formData.course_id) {
@@ -72,12 +73,11 @@ export default function AdminLessons() {
     try {
       const payload = {
         title: formData.title,
-        course_id: formData.course_id, // ربط الدرس بالكورس الـ UUID
+        course_id: formData.course_id, 
         duration: formData.duration || '0 mins'
       };
 
       if (isEditing) {
-        // تحديث الدرس
         const { error } = await supabase
           .from('lessons')
           .update(payload)
@@ -87,7 +87,6 @@ export default function AdminLessons() {
 
         setLessons(prev => prev.map(l => l.id === currentLessonId ? { ...l, ...payload } : l));
       } else {
-        // إضافة درس جديد - مع تحديد الـ select لمنع إرجاع حقل الترتيب من كاش السيرفر
         const { data, error } = await supabase
           .from('lessons')
           .insert([payload])
@@ -107,25 +106,22 @@ export default function AdminLessons() {
     }
   };
 
-const confirmDelete = async () => {
+  const confirmDelete = async () => {
     if (!lessonToDelete) return;
     try {
-      // بنادي على select() مع count عشان نعرف السيرفر حذف كام صف بالظبط
-      const { data, error, status } = await supabase
+      const { data, error } = await supabase
         .from('lessons')
         .delete()
         .eq('id', lessonToDelete.id)
-        .select(); // 👈 دي بتجبر السيرفر يرجع الداتا الممسوحة فعلياً
+        .select(); 
 
       if (error) throw error;
 
-      // 🚨 هنا السر: لو الـ data راجعة فاضية، معناه إن السيرفر محذفش حاجة من الداتابيز أصلاً!
       if (!data || data.length === 0) {
         alert(`⚠️ السيرفر لم يجد درس بهذا الـ ID في الداتابيز لحذفه! \n الـ ID المرسل: ${lessonToDelete.id}`);
-        return; // بنوقف هنا عشان ميمسحش من الشاشة ويخدعك
+        return; 
       }
 
-      // ✅ لو وصل هنا يبقى الحذف تم فعلياً في قاعدة البيانات
       setLessons(prev => prev.filter(l => l.id !== lessonToDelete.id));
       closeDeleteModal();
       
@@ -163,9 +159,10 @@ const confirmDelete = async () => {
     setIsDeleteModalOpen(false);
   };
 
-  // 🔍 4. فلترة وتصفية الدروس بناءً على السيرش والـ Select
+  // 🔍 3. الفلترة والتصفية الذكية بناءً على الـ searchQuery اللي جاية من التوب بار
   const filteredLessons = lessons.filter((lesson) => {
-    const matchesSearch = lesson.title?.toLowerCase().includes(searchTerm.toLowerCase());
+    // علامة الـ ? عشان لو العنوان فيه قيمة فاضية الكود ميعملش Crash
+    const matchesSearch = lesson.title?.toLowerCase().includes((searchQuery || '').toLowerCase());
     const matchesCourse = selectedCourseFilter === 'all' || lesson.course_id === selectedCourseFilter;
     return matchesSearch && matchesCourse;
   });
@@ -182,7 +179,7 @@ const confirmDelete = async () => {
 
   return (
     <div className={styles.lessonsContainer}>
-      {/* الهيدر وزرار الإضافة المربوط بالـ Module */}
+      {/* الهيدر وزرار الإضافة */}
       <div className="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
           <h2 className={`h4 mb-1 ${styles.title}`}>Lessons Management</h2>
@@ -195,17 +192,8 @@ const confirmDelete = async () => {
 
       <div className={styles.tableCard}>
         <div className={styles.searchRow}>
-          <div className={styles.searchWrapper}>
-            <Search className={styles.searchIcon} size={18} />
-            <input 
-              type="text" 
-              placeholder="Search lessons..." 
-              className={styles.searchInput}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-
+          {/* 💡 شيلنا مربع البحث القديم من هنا لأن البحث بقا شغال فوق في الـ Topbar خلاص */}
+          
           <select 
             className={styles.courseSelect}
             value={selectedCourseFilter}
@@ -229,6 +217,7 @@ const confirmDelete = async () => {
               </tr>
             </thead>
             <tbody>
+              {/* 💡 هنا بنعمل الخريطة (.map) على الـ filteredLessons المتفلترة بالبحث الفوقاني */}
               {filteredLessons.length === 0 ? (
                 <tr>
                   <td colSpan="4" className={styles.noData}>No lessons found</td>
@@ -258,7 +247,7 @@ const confirmDelete = async () => {
         </div>
       </div>
 
-      {/* 📥 مودال إضافة وتعديل الدرس من الـ Module */}
+      {/* 📥 مودال إضافة وتعديل الدرس الداكن */}
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
@@ -299,7 +288,7 @@ const confirmDelete = async () => {
         </div>
       )}
 
-      {/* 🗑️ مودال تأكيد الحذف من الـ Module */}
+      {/* 🗑️ مودال تأكيد الحذف الداكن المحمر للتنبيه */}
       {isDeleteModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContentDelete}>
@@ -309,11 +298,12 @@ const confirmDelete = async () => {
                 <X size={20} />
               </button>
             </div>
-            <div className={`${styles.modalBody} text-center py-4`}>
-              <p className="text-secondary small mb-2">Are you sure you want to permanently delete this lesson?</p>
-              <h6 className="text-info fw-semibold mb-0">{lessonToDelete?.title}</h6>
+            <div className={styles.modalBodyDelete}>
+              Are you sure you want to permanently delete this lesson?
+              {/* 💡 ضفنا اسم الدرس بالستايل اللبني المضيء زي ما طلبنا فوق */}
+              <span className={styles.deleteTargetName}>{lessonToDelete?.title}</span>
             </div>
-            <div className={`${styles.modalFooter} justify-content-center`}>
+            <div className={styles.modalFooterDelete}>
               <button type="button" className={styles.cancelBtn} onClick={closeDeleteModal}>Cancel</button>
               <button type="button" className={styles.confirmDeleteBtn} onClick={confirmDelete}>Yes, Delete</button>
             </div>

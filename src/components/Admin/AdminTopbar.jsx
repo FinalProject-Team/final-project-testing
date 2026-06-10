@@ -2,12 +2,20 @@ import React from 'react';
 import { Search, Bell, ShieldCheck } from 'lucide-react';
 import styles from './AdminTopbar.module.css';
 
-export default function AdminTopbar() {
+// 👈 استقبلنا الـ Props هنا بشكل صريح
+export default function AdminTopbar({ searchValue, setSearchValue }) {
   return (
     <header className={`${styles.topbar} d-flex align-items-center justify-content-between px-4`}>
       <div className={styles.searchWrapper}>
         <Search className={styles.searchIcon} size={18} />
-        <input type="text" placeholder="Search..." className={styles.searchInput}/>
+        {/* 🔄 ربطنا الـ value والـ onChange بالـ Props القادمة من الأب (AdminLayout) */}
+        <input 
+          type="text" 
+          placeholder="Search..." 
+          className={styles.searchInput}
+          value={searchValue || ''}
+          onChange={(e) => setSearchValue && setSearchValue(e.target.value)}
+        />
       </div>
 
       <div className="d-flex align-items-center gap-4">

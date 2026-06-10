@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Edit2, Trash2, Plus, X } from 'lucide-react';
+import { Edit2, Trash2, Plus, X } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom'; // 👈 1. استدعينا الـ Context هنا لقراءة التوب بار
 import styles from './AdminCourses.module.css';
 
 import { supabase } from '../../components/layout/services/supabaseClient'; 
@@ -7,8 +8,10 @@ import { supabase } from '../../components/layout/services/supabaseClient';
 export default function AdminCourses() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+
+  // 👈 2. لقطنا الـ searchQuery الموحدة وشيلنا الـ searchTerm المحلية القديمة
+  const { searchQuery } = useOutletContext(); 
 
   const [courseToDelete, setCourseToDelete] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -58,7 +61,6 @@ export default function AdminCourses() {
       };
 
       if (isEditing) {
-        // تحديث في سوبابيز
         const { error } = await supabase
           .from('courses')
           .update(payload)
@@ -70,7 +72,6 @@ export default function AdminCourses() {
           prevCourses.map(c => c.id === currentCourseId ? { ...c, ...payload } : c)
         );
       } else {
-        // إضافة كورس جديد مباشرة في سوبابيز
         const { data, error } = await supabase
           .from('courses')
           .insert([payload])
@@ -90,20 +91,18 @@ export default function AdminCourses() {
     }
   };
 
-  // 🗑️ دالة حذف الكورس المصلحة لـ UUID بدون تحويل الرقم
-const confirmDelete = async () => {
+  // 🗑️ دالة حذف الكورس المصلحة لـ UUID
+  const confirmDelete = async () => {
     if (!courseToDelete) return;
     try {
-      // طلبنا من سوبابيز يرجع لنا الداتا اللي اتحذفت عشان نتأكد إنها اتمسحت فعلياً
-      const { data, error, count } = await supabase
+      const { data, error } = await supabase
         .from('courses')
         .delete()
         .eq('id', courseToDelete.id)
-        .select(); // 👈 الـ select هنا بتجبره يرجع السطر اللي اتمسح
+        .select(); 
 
       if (error) throw error;
 
-      // 🔍 اختبار الأمان: لو الـ data راجعة فاضية، يبقى الـ RLS أو الداتابيز منعت الحذف في الحقيقة!
       if (!data || data.length === 0) {
         console.log("Supabase returned empty array. Rows deleted: 0");
         alert("⚠️ سوبابيز رفض الحذف الفعلي! غالباً بسبب حماية الـ RLS جوة داشبورد Supabase لجدول courses.");
@@ -112,7 +111,6 @@ const confirmDelete = async () => {
 
       console.log("Successfully deleted from Supabase:", data);
 
-      // لو تمام، احذف محلياً وقفل المودال
       setCourses(courses.filter(course => course.id !== courseToDelete.id));
       closeDeleteModal();
     } catch (error) {
@@ -150,11 +148,14 @@ const confirmDelete = async () => {
     setFormData({ title: '', price: '', description: '', instructor: '' });
   };
 
+  // 🔍 3. تعديل الفلترة لتقرأ مباشرة من نص البحث الخاص بالتوب بار الفوقاني
   const filteredCourses = courses.filter((course) => {
     const title = course.title || '';
     const instructor = course.instructor || 'N/A';
-    const matchesSearch = title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          instructor.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // التصفية بالاعتماد على searchQuery الجاري كتابته فوق حالياً
+    const matchesSearch = title.toLowerCase().includes((searchQuery || '').toLowerCase()) || 
+                          instructor.toLowerCase().includes((searchQuery || '').toLowerCase());
     return matchesSearch;
   });
 
@@ -178,17 +179,8 @@ const confirmDelete = async () => {
       </div>
 
       <div className={styles.tableCard}>
-        <div className={styles.searchRow}>
-          <div className={styles.searchWrapper}>
-            <Search className={styles.searchIcon} size={18} />
-            <input 
-              type="text" 
-              placeholder="Search courses by title or instructor..." 
-              className={styles.searchInput}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+        <div className={styles.searchRow} style={{ justifyContent: 'flex-end' }}>
+          {/* 💡 شيلنا الـ Input القديم من هنا تماماً عشان نعتمد على شريط البحث الرئيسي في الـ Topbar */}
 
           <button className={styles.addBtnInRow} onClick={() => setIsModalOpen(true)}>
             <Plus size={18} /> Add New Course
