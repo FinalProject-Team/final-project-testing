@@ -1,3 +1,5 @@
+ @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 .page {
   max-width: none;
   width:100%;
@@ -58,7 +60,6 @@
     width: 100%;
   }
 }
- @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
   --black: #0B0F19;

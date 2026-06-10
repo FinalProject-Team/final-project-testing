@@ -1,24 +1,24 @@
-/* الحاوية الأساسية للصفحة */
+/* ==========================================================================
+   1. الحاوية الأساسية والجدول (ستايل فاتح ونظيف مطابق لصفحة الكورسيز الفاتحة)
+   ========================================================================== */
 .lessonsContainer {
   padding: 1.5rem;
-  background-color: #f8f9fa; /* خلفية فاتحة ومريحة */
+  background-color: #f8f9fa; 
   min-height: 100vh;
 }
 
-/* تنسيق العناوين الرئيسية */
 .title {
-  color: #1e293b; /* لون داكن واضح */
+  color: #1e293b; 
   font-weight: 700;
 }
 
 .subtitle {
-  color: #64748b; /* لون رمادي هادئ للوصف */
+  color: #64748b; 
   font-size: 0.9rem;
 }
 
-/* زر إضافة درس جديد */
 .addLessonBtn {
-  background-color: #00cae3; /* اللون اللبني الزاهي الظاهر في الصورة */
+  background-color: #00cae3; 
   color: #ffffff;
   border: none;
   padding: 0.6rem 1.2rem;
@@ -35,17 +35,15 @@
   background-color: #00b5cc;
 }
 
-/* 🃏 الكارد الأبيض الرئيسي (نفس تصميم الصورة الثانية بالظبط) */
 .tableCard {
   background: #ffffff;
-  border-radius: 16px; /* زوايا دائرية ناعمة */
+  border-radius: 16px; 
   padding: 1.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* شادو خفيف جداً واحترافي */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02); 
   border: 1px solid #edf2f7;
   margin-top: 1rem;
 }
 
-/* صف البحث والفلترة داخل الكارد */
 .searchRow {
   display: flex;
   gap: 1rem;
@@ -83,7 +81,6 @@
   border-color: #00cae3;
 }
 
-/* قائمة اختيار الكورسات */
 .courseSelect {
   padding: 0.6rem 2rem 0.6rem 1rem;
   border: 1px solid #e2e8f0;
@@ -95,64 +92,57 @@
   cursor: pointer;
 }
 
-/* 📊 تنسيق الجدول المخصص */
 .customTable {
   width: 100%;
   border-collapse: collapse;
   margin-top: 0.5rem;
 }
 
-/* هيدر الجدول الداكن (نفس تصميم صورة الليسونز اللي بعتيها) */
 .customTable th {
-  background-color: #111827; /* خلفية هيدر داكنة كالعينة */
-  color: #f8fafc; /* نص أبيض مائل للرمادي الفاتح */
+  background-color: #ffffff;
+  color: #64748b; 
   font-weight: 600;
   padding: 1rem;
   text-align: left;
   font-size: 0.9rem;
+  border-bottom: 2px solid #edf2f7;
 }
 
 .customTable th:first-child {
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
+  padding-left: 1rem !important;
 }
 
 .customTable th:last-child {
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
   text-align: right;
 }
 
-/* صفوف الجدول */
 .tableRow {
   border-bottom: 1px solid #f1f5f9;
   transition: background-color 0.2s;
 }
 
 .tableRow:hover {
-  background-color: #f8fafc; /* تأثير خفيف عند مرور الماوس */
+  background-color: #f8fafc; 
 }
 
-/* نصوص الخلايا وعناوين الدروس (تعديل الألوان للوضع الفاتح) */
 .lessonTitleText {
-  color: #0f172a; /* أسود داكن واضح */
-  font-weight: 600;
+  color: #0f172a; 
+  font-weight: 500;
   font-size: 0.95rem;
   padding-left: 1rem !important;
 }
 
 .courseTitleText {
-  color: #64748b; /* رمادي متوسط للكورس المربوط */
+  color: #64748b; 
   font-size: 0.95rem;
 }
 
 .durationText {
   color: #64748b;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 0.95rem;
 }
 
-/* حالة عدم وجود بيانات */
 .noData {
   text-align: center;
   padding: 3rem !important;
@@ -160,14 +150,17 @@
   font-size: 1rem;
 }
 
-/* 📥 المودال الخاص بالإدخال والتعديل */
+
+/* ==========================================================================
+   2. مودال الإضافة والتعديل الداكن (Dark Modal - مطابق لـ image_d5fa75.png)
+   ========================================================================== */
 .modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(15, 23, 42, 0.6); /* شادو خلفية للمودال داكن وشفاف */
+  background: rgba(0, 0, 0, 0.6); /* تعتيم خلفية المودال المظلم */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -176,28 +169,32 @@
 }
 
 .modalContent {
-  background: #ffffff;
-  border-radius: 12px;
+  background: #1b263b; /* الخلفية الزرقاء الداكنة للمودال */
+  border-radius: 14px;
   width: 100%;
   max-width: 500px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   overflow: hidden;
 }
 
 .modalHeader {
-  padding: 1.2rem;
-  border-bottom: 1px solid #edf2f7;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f8fafc;
+  background: #1b263b;
 }
 
 .modalTitle {
-  color: #1e293b;
+  color: #00cae3; /* اللون اللبني الجذاب للعنوان */
   font-weight: 600;
   margin: 0;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .closeBtn {
@@ -205,15 +202,17 @@
   border: none;
   color: #94a3b8;
   cursor: pointer;
+  font-size: 1.1rem;
   transition: color 0.2s;
 }
 
 .closeBtn:hover {
-  color: #64748b;
+  color: #ffffff;
 }
 
 .modalBody {
   padding: 1.5rem;
+  background: #1b263b;
 }
 
 .formGroup {
@@ -223,52 +222,141 @@
 .formLabel {
   display: block;
   margin-bottom: 0.5rem;
-  color: #475569;
+  color: #94a3b8; /* لون بروفايل الليبل الرمادي الهادئ */
   font-weight: 500;
   font-size: 0.9rem;
 }
 
+/* الإنبوتس المظلمة المحترفة المحددة ببوردر ناعم */
 .formInput, .formSelect {
   width: 100%;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid #cbd5e1;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 6px;
-  background-color: #ffffff;
-  color: #1e293b;
+  background-color: #1e1e1e; /* خلفية الإدخال السوداء المدمجة */
+  color: #ffffff;
   outline: none;
+  font-size: 0.95rem;
 }
 
 .formInput:focus, .formSelect:focus {
   border-color: #00cae3;
 }
 
+/* تذييل المودال المظلم */
 .modalFooter {
   padding: 1rem 1.5rem;
-  border-top: 1px solid #edf2f7;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
-  background: #f8fafc;
+  background: #131b2e; /* خلفية أغمق للـ footer */
 }
 
+/* زر Cancel الرمادي المزرق */
 .cancelBtn {
-  background: #e2e8f0;
-  color: #475569;
+  background: #3a475e; 
+  color: #ffffff;
   border: none;
-  padding: 0.5rem 1.2rem;
+  padding: 0.55rem 1.4rem;
   border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
+.cancelBtn:hover {
+  background: #4b5a75;
+}
+
+/* زر حفظ التعديلات اللبني الزاهي */
 .saveBtn {
   background: #00cae3;
   color: white;
   border: none;
-  padding: 0.5rem 1.2rem;
+  padding: 0.55rem 1.4rem;
   border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.saveBtn:hover {
+  background: #00b5cc;
+}
+
+
+/* ==========================================================================
+   3. مودال رسالة تأكيد الحذف الداكن (Confirm Delete - مطابق لـ image_d5fa90.png)
+   ========================================================================== */
+.modalContentDelete {
+  background: #181d26; /* درجة الدارك المايل للبني والرمادي الغامق */
+  border-radius: 14px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+}
+
+.modalHeaderDelete {
+  padding: 1.2rem 1.5rem 0.5rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #251c1c; /* الهيدر المحمر الغامق جداً للتنبيه بالمللي من الصورة */
+}
+
+.modalTitleDelete {
+  color: #ff5252; /* اللون الأحمر الفاقع لعنوان التحذير */
+  font-weight: 600;
+  margin: 0;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* جسم مودال الحذف والنص الداخلي */
+.modalBodyDelete {
+  padding: 2rem 1.5rem;
+  background: #181d26;
+  text-align: center;
+  color: #cbd5e1; /* نص السؤال بالرمادي الفاتح المقروء */
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* اسم الكورس أو الدرس المحذوف المعروض بلون متباين */
+.deleteTargetName {
+  color: #00cae3; /* اللون اللبني المضيء لاسم العنصر المراد حذفه */
+  display: block;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.modalFooterDelete {
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: center; /* توسيط الأزرار بالمللي زي الصورة */
+  gap: 0.75rem;
+  background: #11141b;
+}
+
+/* زر الحذف الأحمر */
+.confirmDeleteBtn {
+  background: #ff5252; 
+  color: white;
+  border: none;
+  padding: 0.55rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.confirmDeleteBtn:hover {
+  background: #e04141;
 }
 
 /* لودينج كونتينر */
