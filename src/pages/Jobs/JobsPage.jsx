@@ -8,23 +8,24 @@ import StatsCards from '../../components/Jobs/StatsCards/StatsCards';
 import SearchBar from '../../components/Jobs/SearchBar/SearchBar';
 import JobCard from '../../components/Jobs/JobCard/JobCard';
 import JobDetails from '../../components/Jobs/JobDetails/JobDetails';
-
+import JobPostModal from "../../pages/Jobs/JobPostModal.jsx";
 export default function JobsPage() {
-  const [jobs, setJobs]               = useState([]);
-  const [myApps, setMyApps]           = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [applying, setApplying]       = useState(null);
-  const [error, setError]             = useState(null);
-  const [tab, setTab]                 = useState('browse'); // 'browse' | 'applied'
-  const [search, setSearch]           = useState('');
+  const [jobs, setJobs] = useState([]);
+  const [myApps, setMyApps] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [applying, setApplying] = useState(null);
+  const [error, setError] = useState(null);
+  const [tab, setTab] = useState('browse'); // 'browse' | 'applied'
+  const [search, setSearch] = useState('');
   const sidebarRef = useRef(null);
+
+
   const [selectedJob, setSelectedJob] = useState(null);
-
-
+  const [showPostModal, setShowPostModal] = useState(false);
 
 
   const { isAuthenticated, isJobSeeker } = useAuth();
-  const mounted                        = useRef(true);
+  const mounted = useRef(true);
 
   useEffect(() => {
     mounted.current = true;
@@ -73,41 +74,94 @@ export default function JobsPage() {
   const filtered = jobs.filter(j => {
     const q = search.toLowerCase();
     return (j.title || '').toLowerCase().includes(q) ||
-           (j.company || '').toLowerCase().includes(q) ||
-           (j.location || '').toLowerCase().includes(q);
+      (j.company || '').toLowerCase().includes(q) ||
+      (j.location || '').toLowerCase().includes(q);
   });
+
   const handleSelectJob = (job) => {
-  setSelectedJob(job);
-};
+    setSelectedJob(job);
+  };
+
+
+
+
 
   return (
-       <div className={styles.page}>
+    <div className={styles.page}>
       <StatsCards />
+
+      <div className={styles.headerActions}>
+        <button
+          className={styles.postBtn}
+          onClick={() => setShowPostModal(true)}
+        >
+          Post Job
+        </button>
+      </div>
+
       <div className={styles.body}>
         <div className={styles.left}>
-          <SearchBar value={search} onChange={setSearch} />
+          <SearchBar
+            value={search}
+            onChange={setSearch}
+          />
+
           <div className={styles.jobList}>
-            {loading && <div className={styles.empty}>Loading jobs...</div>}
+            {loading && (
+              <div className={styles.empty}>
+                Loading jobs...
+              </div>
+            )}
+
             {!loading && error && (
-              <div className={styles.empty} style={{ color: '#EF4444' }}>{error}</div>
+              <div
+                className={styles.empty}
+                style={{ color: "hashtag#EF4444" }}
+              >
+                {error}
+              </div>
             )}
-            {!loading && !error && filtered.map((job) => (
-              <JobCard
-                key={job.id}
-                job={job}
-                selected={selectedJob?.id === job.id}
-              onClick={() => handleSelectJob(job)}
-              />
-            ))}
-            {!loading && !error && filtered.length === 0 && (
-              <div className={styles.empty}>No jobs match your search.</div>
-            )}
+
+            {!loading &&
+              !error &&
+              filtered.map((job) => (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  selected={
+                    selectedJob?.id === job.id
+                  }
+                  onClick={() =>
+                    handleSelectJob(job)
+                  }
+                />
+              ))}
+
+            {!loading &&
+              !error &&
+              filtered.length === 0 && (
+                <div className={styles.empty}>
+                  No jobs match your search.
+                </div>
+              )}
           </div>
         </div>
-        <div className={styles.right} ref={sidebarRef}>
+
+        <div
+          className={styles.right}
+          ref={sidebarRef}
+        >
           <JobDetails job={selectedJob} />
         </div>
       </div>
+
+      <JobPostModal
+        show={showPostModal}
+        onClose={() =>
+          setShowPostModal(false)
+        }
+      />
     </div>
+
   );
 }
