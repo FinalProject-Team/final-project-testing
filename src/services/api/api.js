@@ -20,7 +20,7 @@
 
 //   console.log('LOGIN RESPONSE:', res.data);
 
-  
+
 
 
 //   return res.data;
@@ -541,6 +541,41 @@ export async function apiGetMyApplications() {
 export async function apiGetMyProjects() {
   const res = await axios.get(
     `${BASE_URL}/api/projects/my-projects`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+
+export async function apiCreateJob(payload) {
+  const res = await axios.post(
+    `${BASE_URL}/api/jobs`,
+    payload,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiGetMyJobs() {
+  const res = await axios.get(
+    `${BASE_URL}/api/jobs/my/jobs`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiGetJobApplicants(jobId) {
+  const res = await axios.get(
+    `${BASE_URL}/api/jobs/${jobId}/applicants`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiUpdateApplicationStatus(applicationId, status) {
+  const res = await axios.patch(
+    `${BASE_URL}/api/jobs/applications/${applicationId}/status`,
+    { status },
     { headers: authHeaders() }
   );
   return res.data;
