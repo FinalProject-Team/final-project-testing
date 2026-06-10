@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Edit,
   Save,
@@ -14,51 +14,222 @@ import {
   Star,
 } from "lucide-react";
 
+import {
+  getCurrentUser,
+  getInstructorProfile,
+  updateAuthProfile,
+  updateInstructorProfile,
+} from "../../../services/api/instructorService";
+
 import styles from "./InstructorDashboardProfile.module.css";
+
+const fallback = "Not added yet";
 
 function InstructorDashboardProfile() {
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const [profile, setProfile] = useState({
-    fullName: "John Smith",
-    email: "john.smith@example.com",
-    jobTitle: "Senior Web Development Instructor",
-    location: "San Francisco, CA",
-    bio: "Passionate educator with 10+ years of experience teaching web development and programming. I love helping students achieve their goals and build amazing projects.",
-    website: "https://johnsmith.dev",
-    github: "https://github.com/johnsmith",
-    linkedin: "https://linkedin.com/in/johnsmith",
-    image:
-      "https://randomuser.me/api/portraits/men/32.jpg",
+  const fileInputRef = useRef(null);
+
+  const [formData, setFormData] = useState({
+    full_name: "",
+    email: "",
+    job_title: "",
+    bio: "",
+    avatar_url: "",
+    location: "",
+    website: "",
+    github: "",
+    linkedin: "",
+    courses_count: 0,
+    students_count: 0,
+    lessons_count: 0,
+    rating: 0,
   });
 
-  const stats = [
-    { label: "Courses", value: 12, icon: BookOpen },
-    { label: "Students", value: "1,543", icon: Users },
-    { label: "Lessons", value: 87, icon: FileText },
-    { label: "Rating", value: 4.8, icon: Star },
-  ];
+  const loadProfile = async () => {
+    try {
+      setLoading(true);
+
+      const userResponse = await getCurrentUser();
+      const instructorResponse = await getInstructorProfile();
+
+      const user = userResponse?.user ?? userResponse ?? {};
+      const instructor = instructorResponse?.data || instructorResponse || {};
+
+      setFormData({
+        full_name: user.full_name || user.fullName || user.name || "",
+        email: user.email || "",
+        job_title: user.job_title || user.jobTitle || "",
+        bio: user.bio || "",
+        avatar_url: user.avatar_url || user.avatarUrl || "",
+        location: instructor.location || "",
+        website: instructor.website || "",
+        github: instructor.github || "",
+        linkedin: instructor.linkedin || "",
+        courses_count: instructor.courses_count || 0,
+        students_count: instructor.students_count || 0,
+        lessons_count: instructor.lessons_count || 0,
+        rating: instructor.rating || 0,
+      });
+    } catch (error) {
+      console.error("Failed to load instructor profile:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProfile((prev) => ({ ...prev, [name]: value }));
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
+  const handleCancel = () => {
+    setIsEditing(false);
+    loadProfile();
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+
+      await updateAuthProfile({
+        bio: formData.bio,
+      });
+
+      await updateInstructorProfile({
+        location: formData.location,
+        website: formData.website,
+        github: formData.github,
+        linkedin: formData.linkedin,
+      });
+
+      await loadProfile();
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      alert("Profile update failed");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // 🚀 رفع الصورة
+  // const handleAvatarChange = async (e) => {
+  //   console.log("SELECTED FILE:", file);
+  //   const file = e.target.files[0];
+  //   if (!file) return;
+
+  //   try {
+  //     const formDataUpload = new FormData();
+  //     formDataUpload.append("avatar", file);
+
+  //     const token = localStorage.getItem("token");
+
+  //     const res = await fetch(
+  //       "http://localhost:5000/api/profile/upload-avatar",
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         body: formDataUpload,
+  //       }
+  //     );
+
+  //     const data = await res.json();
+
+  //     if (!res.ok) throw new Error(data.error || "Upload failed");
+
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       avatar_url: data.avatar_url,
+  //     }));
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert("Failed to upload image");
+  //   }
+  // };
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append("avatar", file);
+
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        "http://localhost:5000/api/auth/upload-avatar",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formDataUpload,
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+
+      setFormData((prev) => ({
+        ...prev,
+        avatar_url: data.avatar_url,
+      }));
+
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload image");
+    }
+  };
+
+  if (loading) {
+    return <div className={styles.profile}>Loading profile...</div>;
+  }
+
   return (
-    <section className={styles.profile}>
+    <div className={styles.profile}>
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        accept="image/*"
+        onChange={handleAvatarChange}
+      />
+
       <div className={styles.header}>
         <div>
           <h1>Profile</h1>
           <p>Manage your personal information and public profile</p>
         </div>
 
-        <button
-          className={isEditing ? styles.cancelBtn : styles.editBtn}
-          onClick={() => setIsEditing(!isEditing)}
-        >
-          {isEditing ? <X size={18} /> : <Edit size={18} />}
-          {isEditing ? "Cancel" : "Edit Profile"}
-        </button>
+        {!isEditing ? (
+          <button
+            className={styles.editBtn}
+            onClick={() => setIsEditing(true)}
+          >
+            <Edit size={16} />
+            Edit Profile
+          </button>
+        ) : (
+          <button className={styles.cancelBtn} onClick={handleCancel}>
+            <X size={16} />
+            Cancel
+          </button>
+        )}
       </div>
 
       <div className={styles.card}>
@@ -66,11 +237,23 @@ function InstructorDashboardProfile() {
 
         <div className={styles.personalContent}>
           <div className={styles.avatarBox}>
-            <img src={profile.image} alt="Instructor" className={styles.avatar} />
+            {formData.avatar_url ? (
+              <img
+                src={formData.avatar_url}
+                alt="Instructor"
+                className={styles.avatar}
+              />
+            ) : (
+              <div className={styles.avatarPlaceholder}>Instructor</div>
+            )}
 
             {isEditing && (
-              <button className={styles.cameraBtn}>
-                <Camera size={16} />
+              <button
+                className={styles.cameraBtn}
+                type="button"
+                onClick={() => fileInputRef.current.click()}
+              >
+                <Camera size={15} />
               </button>
             )}
           </div>
@@ -78,48 +261,23 @@ function InstructorDashboardProfile() {
           <div className={styles.infoGrid}>
             <div>
               <label>Full Name</label>
-              {isEditing ? (
-                <input
-                  name="fullName"
-                  value={profile.fullName}
-                  onChange={handleChange}
-                />
-              ) : (
-                <p>{profile.fullName}</p>
-              )}
+              <p>{formData.full_name || fallback}</p>
             </div>
 
             <div>
               <label>Email</label>
-              {isEditing ? (
-                <input
-                  name="email"
-                  type="email"
-                  value={profile.email}
-                  onChange={handleChange}
-                />
-              ) : (
-                <p>
-                  <Mail size={16} />
-                  {profile.email}
-                </p>
-              )}
+              <p>
+                <Mail size={14} />
+                {formData.email || fallback}
+              </p>
             </div>
 
             <div>
               <label>Job Title</label>
-              {isEditing ? (
-                <input
-                  name="jobTitle"
-                  value={profile.jobTitle}
-                  onChange={handleChange}
-                />
-              ) : (
-                <p>
-                  <Briefcase size={16} />
-                  {profile.jobTitle}
-                </p>
-              )}
+              <p>
+                <Briefcase size={14} />
+                {formData.job_title || fallback}
+              </p>
             </div>
 
             <div>
@@ -127,13 +285,13 @@ function InstructorDashboardProfile() {
               {isEditing ? (
                 <input
                   name="location"
-                  value={profile.location}
+                  value={formData.location}
                   onChange={handleChange}
                 />
               ) : (
                 <p>
-                  <MapPin size={16} />
-                  {profile.location}
+                  <MapPin size={14} />
+                  {formData.location || fallback}
                 </p>
               )}
             </div>
@@ -143,11 +301,11 @@ function InstructorDashboardProfile() {
               {isEditing ? (
                 <textarea
                   name="bio"
-                  value={profile.bio}
+                  value={formData.bio}
                   onChange={handleChange}
                 />
               ) : (
-                <p>{profile.bio}</p>
+                <p>{formData.bio || fallback}</p>
               )}
             </div>
           </div>
@@ -158,53 +316,32 @@ function InstructorDashboardProfile() {
         <h2>Social Links</h2>
 
         <div className={styles.socialGrid}>
-          <div>
-            <label>Website</label>
-            {isEditing ? (
-              <input
-                name="website"
-                value={profile.website}
-                onChange={handleChange}
-              />
-            ) : (
-              <a href={profile.website} target="_blank" rel="noreferrer">
-                <Link2 size={16} />
-                {profile.website}
-              </a>
-            )}
-          </div>
+          {["website", "github", "linkedin"].map((field) => (
+            <div key={field}>
+              <label>
+                {field === "github"
+                  ? "GitHub"
+                  : field === "linkedin"
+                    ? "LinkedIn"
+                    : "Website"}
+              </label>
 
-          <div>
-            <label>GitHub</label>
-            {isEditing ? (
-              <input
-                name="github"
-                value={profile.github}
-                onChange={handleChange}
-              />
-            ) : (
-              <a href={profile.github} target="_blank" rel="noreferrer">
-                <Link2 size={16} />
-                {profile.github}
-              </a>
-            )}
-          </div>
-
-          <div>
-            <label>LinkedIn</label>
-            {isEditing ? (
-              <input
-                name="linkedin"
-                value={profile.linkedin}
-                onChange={handleChange}
-              />
-            ) : (
-              <a href={profile.linkedin} target="_blank" rel="noreferrer">
-                <Link2 size={16} />
-                {profile.linkedin}
-              </a>
-            )}
-          </div>
+              {isEditing ? (
+                <input
+                  name={field}
+                  value={formData[field]}
+                  onChange={handleChange}
+                />
+              ) : formData[field] ? (
+                <a href={formData[field]} target="_blank" rel="noreferrer">
+                  <Link2 size={14} />
+                  {formData[field]}
+                </a>
+              ) : (
+                <p>{fallback}</p>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -212,29 +349,45 @@ function InstructorDashboardProfile() {
         <h2>Statistics</h2>
 
         <div className={styles.statsGrid}>
-          {stats.map((stat) => {
-            const Icon = stat.icon;
+          <div className={styles.statBox}>
+            <BookOpen size={24} />
+            <h3>{formData.courses_count}</h3>
+            <p>Courses</p>
+          </div>
 
-            return (
-              <div className={styles.statBox} key={stat.label}>
-                <Icon size={24} />
-                <h3>{stat.value}</h3>
-                <p>{stat.label}</p>
-              </div>
-            );
-          })}
+          <div className={styles.statBox}>
+            <Users size={24} />
+            <h3>{formData.students_count}</h3>
+            <p>Students</p>
+          </div>
+
+          <div className={styles.statBox}>
+            <FileText size={24} />
+            <h3>{formData.lessons_count}</h3>
+            <p>Lessons</p>
+          </div>
+
+          <div className={styles.statBox}>
+            <Star size={24} />
+            <h3>{formData.rating}</h3>
+            <p>Rating</p>
+          </div>
         </div>
       </div>
 
       {isEditing && (
         <div className={styles.saveWrapper}>
-          <button className={styles.saveBtn} onClick={() => setIsEditing(false)}>
-            <Save size={18} />
-            Save Changes
+          <button
+            className={styles.saveBtn}
+            onClick={handleSave}
+            disabled={saving}
+          >
+            <Save size={16} />
+            {saving ? "Saving..." : "Save Changes"}
           </button>
         </div>
       )}
-    </section>
+    </div>
   );
 }
 

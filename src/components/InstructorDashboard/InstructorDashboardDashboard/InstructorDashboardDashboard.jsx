@@ -3,6 +3,7 @@ import { BookOpen, FileText, Users, Video } from "lucide-react";
 import {
   getInstructorDashboard,
   getLiveSessions,
+  getInstructorActivity
 } from "../../../services/api/instructorService";
 import styles from "./InstructorDashboardDashboard.module.css";
 
@@ -17,6 +18,9 @@ function InstructorDashboardDashboard() {
   const [loading, setLoading] = useState(true);
   const [sessionsLoading, setSessionsLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [activity, setActivity] = useState([]);
+  const [activityLoading, setActivityLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -56,6 +60,26 @@ function InstructorDashboardDashboard() {
 
     fetchDashboardData();
     fetchLiveSessions();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchActivity = async () => {
+      try {
+        setActivityLoading(true);
+
+        const data = await getInstructorActivity();
+
+        setActivity(data || []);
+      } catch (err) {
+        console.error(err);
+        setActivity([]);
+      } finally {
+        setActivityLoading(false);
+      }
+    };
+
+    fetchActivity();
   }, []);
 
   const stats = [
@@ -118,20 +142,7 @@ function InstructorDashboardDashboard() {
       </div>
 
       <div className={styles.bottomGrid}>
-        <div className={styles.panel}>
-          <h3>Recent Activity</h3>
-
-          <div className={styles.list}>
-            <div className={styles.listItem}>
-              <div>
-                <h4>No recent activity yet</h4>
-                <p>Activity API is not available yet.</p>
-              </div>
-
-              <span>—</span>
-            </div>
-          </div>
-        </div>
+        
 
         <div className={styles.panel}>
           <h3>Upcoming Interactive Sessions</h3>
