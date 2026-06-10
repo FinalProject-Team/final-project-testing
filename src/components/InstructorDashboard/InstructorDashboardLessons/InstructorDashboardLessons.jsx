@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Plus,
   Search,
@@ -8,57 +8,30 @@ import {
   Trash2,
   MoreVertical,
 } from "lucide-react";
+import axios from "axios";
 import styles from "./InstructorDashboardLessons.module.css";
+import { getCourseLessons } from "../../../services/api/instructorService";
+
+const API_BASE_URL =
+  "https://final-project-backend-production-214a.up.railway.app";
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+};
 
 function InstructorDashboardLessons() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [openCourseId, setOpenCourseId] = useState(1);
+  const [openCourseId, setOpenCourseId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [courses, setCourses] = useState([
-    {
-      id: 1,
-      title: "React Masterclass",
-      lessons: [
-        {
-          id: 1,
-          title: "Introduction to React",
-          video_url: "https://example.com/video1",
-          lesson_order: 1,
-        },
-        {
-          id: 2,
-          title: "Understanding Components",
-          video_url: "https://example.com/video2",
-          lesson_order: 2,
-        },
-        {
-          id: 3,
-          title: "State and Props",
-          video_url: "https://example.com/video3",
-          lesson_order: 3,
-        },
-      ],
-    },
-    {
-      id: 2,
-      title: "JavaScript Fundamentals",
-      lessons: [
-        {
-          id: 4,
-          title: "Variables and Data Types",
-          video_url: "https://example.com/video4",
-          lesson_order: 1,
-        },
-        {
-          id: 5,
-          title: "Functions and Scope",
-          video_url: "https://example.com/video5",
-          lesson_order: 2,
-        },
-      ],
-    },
-  ]);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     courseId: "",
@@ -67,6 +40,62 @@ function InstructorDashboardLessons() {
     lesson_order: "",
   });
 
+  // ================= FETCH DATA =================
+  const fetchCoursesWithLessons = async () => {
+    try {
+      setLoading(true);
+
+      // 1. get courses
+      const coursesRes = await axios.get(
+        `${API_BASE_URL}/api/instructor/courses`,
+        getAuthHeaders()
+      );
+
+      const coursesData = coursesRes.data || [];
+      const fullData = await Promise.all(
+        coursesData.map(async (course) => {
+
+          console.log("COURSE OBJECT:", course);
+          console.log("COURSE ID:", course.id);
+          console.log("ALL KEYS:", Object.keys(course));
+
+          const lessonsRes = await axios.get(
+            `${API_BASE_URL}/api/lessons/instructor/course/${course.id}`,
+            getAuthHeaders()
+          );
+
+          return {
+            ...course,
+            lessons: lessonsRes.data || [],
+          };
+        })
+      );
+
+      setCourses(fullData);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCoursesWithLessons();
+  }, []);
+  useEffect(() => {
+    const testAPI = async () => {
+      if (!courses.length) return;
+
+      const firstCourseId = courses[0].id;
+
+      const data = await getCourseLessons(firstCourseId);
+      console.log("LESSONS DATA:", data);
+    };
+
+    testAPI();
+  }, [courses]);
+
+  // ================= SEARCH =================
   const filteredCourses = useMemo(() => {
     if (!searchTerm.trim()) return courses;
 
@@ -84,10 +113,12 @@ function InstructorDashboardLessons() {
       );
   }, [courses, searchTerm]);
 
-  const toggleCourse = (courseId) => {
-    setOpenCourseId(openCourseId === courseId ? null : courseId);
+  // ================= TOGGLE =================
+  const toggleCourse = (id) => {
+    setOpenCourseId(openCourseId === id ? null : id);
   };
 
+  // ================= FORM =================
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -97,53 +128,57 @@ function InstructorDashboardLessons() {
     }));
   };
 
-  const handleAddLesson = (e) => {
+  // ================= ADD LESSON =================
+  const handleAddLesson = async (e) => {
     e.preventDefault();
 
-    const newLesson = {
-      id: Date.now(),
-      title: formData.title,
-      video_url: formData.video_url,
-      lesson_order: Number(formData.lesson_order),
-    };
+    try {
+      await axios.post(
+        `${API_BASE_URL}/api/lessons`,
+        {
+          course_id: formData.courseId,
+          title: formData.title,
+          video_url: formData.video_url,
+          lesson_order: Number(formData.lesson_order),
+        },
+        getAuthHeaders()
+      );
 
-    setCourses((prevCourses) =>
-      prevCourses.map((course) =>
-        course.id === Number(formData.courseId)
-          ? {
-              ...course,
-              lessons: [...course.lessons, newLesson].sort(
-                (a, b) => a.lesson_order - b.lesson_order
-              ),
-            }
-          : course
-      )
-    );
+      setIsModalOpen(false);
 
-    setFormData({
-      courseId: "",
-      title: "",
-      video_url: "",
-      lesson_order: "",
-    });
+      setFormData({
+        courseId: "",
+        title: "",
+        video_url: "",
+        lesson_order: "",
+      });
 
-    setIsModalOpen(false);
+      await fetchCoursesWithLessons();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to add lesson");
+    }
   };
 
   return (
     <section className={styles.lessons}>
+      {/* HEADER */}
       <div className={styles.header}>
         <div>
           <h1>Lessons Management</h1>
           <p>Organize and manage lessons for your courses.</p>
         </div>
 
-        <button className={styles.addBtn} onClick={() => setIsModalOpen(true)}>
+        <button
+          className={styles.addBtn}
+          onClick={() => setIsModalOpen(true)}
+        >
           <Plus size={18} />
           Add Lesson
         </button>
       </div>
 
+      {/* SEARCH */}
       <div className={styles.searchBox}>
         <Search size={20} />
         <input
@@ -154,6 +189,10 @@ function InstructorDashboardLessons() {
         />
       </div>
 
+      {/* LOADING */}
+      {loading && <p>Loading...</p>}
+
+      {/* LIST */}
       <div className={styles.courseList}>
         {filteredCourses.map((course) => (
           <div className={styles.courseCard} key={course.id}>
@@ -162,12 +201,7 @@ function InstructorDashboardLessons() {
               onClick={() => toggleCourse(course.id)}
             >
               <div className={styles.courseTitle}>
-                <ChevronDown
-                  size={20}
-                  className={
-                    openCourseId === course.id ? styles.rotate : styles.chevron
-                  }
-                />
+                <ChevronDown size={20} />
                 <h2>{course.title}</h2>
                 <span>{course.lessons.length} lessons</span>
               </div>
@@ -204,6 +238,7 @@ function InstructorDashboardLessons() {
         ))}
       </div>
 
+      {/* MODAL */}
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -215,7 +250,6 @@ function InstructorDashboardLessons() {
             </button>
 
             <h2>Add New Lesson</h2>
-            <p>Create a new lesson for your course.</p>
 
             <form onSubmit={handleAddLesson} className={styles.form}>
               <label>Course</label>
@@ -225,19 +259,17 @@ function InstructorDashboardLessons() {
                 onChange={handleChange}
                 required
               >
-                <option value="">Select a course</option>
-                {courses.map((course) => (
-                  <option key={course.id} value={course.id}>
-                    {course.title}
+                <option value="">Select course</option>
+                {courses.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.title}
                   </option>
                 ))}
               </select>
 
-              <label>Lesson Title</label>
+              <label>Title</label>
               <input
-                type="text"
                 name="title"
-                placeholder="Enter lesson title"
                 value={formData.title}
                 onChange={handleChange}
                 required
@@ -245,36 +277,27 @@ function InstructorDashboardLessons() {
 
               <label>Video URL</label>
               <input
-                type="url"
                 name="video_url"
-                placeholder="https://example.com/video"
                 value={formData.video_url}
                 onChange={handleChange}
                 required
               />
 
-              <label>Lesson Order</label>
+              <label>Order</label>
               <input
-                type="number"
                 name="lesson_order"
-                placeholder="1"
+                type="number"
                 value={formData.lesson_order}
                 onChange={handleChange}
                 required
               />
 
               <div className={styles.modalActions}>
-                <button
-                  type="button"
-                  className={styles.cancelBtn}
-                  onClick={() => setIsModalOpen(false)}
-                >
+                <button type="button" onClick={() => setIsModalOpen(false)}>
                   Cancel
                 </button>
 
-                <button type="submit" className={styles.submitBtn}>
-                  Add Lesson
-                </button>
+                <button type="submit">Add Lesson</button>
               </div>
             </form>
           </div>

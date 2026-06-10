@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Plus, Search, Edit, Trash2, X } from "lucide-react";
-import { getInstructorCourses } from "../../../services/api/instructorService";
+import {
+  getInstructorCourses,
+  createCourse,
+  deleteCourse,
+  updateCourse
+} from "../../../services/api/instructorService";
+
 import styles from "./InstructorDashboardCourses.module.css";
 
 function InstructorDashboardCourses() {
@@ -10,6 +16,7 @@ function InstructorDashboardCourses() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [editingCourse, setEditingCourse] = useState(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -19,22 +26,21 @@ function InstructorDashboardCourses() {
     level: "",
   });
 
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+
+      const response = await getInstructorCourses();
+      setCourses(response || []);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load courses");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        setLoading(true);
-
-        const response = await getInstructorCourses();
-
-        setCourses(response || []);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load courses");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCourses();
   }, []);
 
@@ -58,20 +64,7 @@ function InstructorDashboardCourses() {
     }));
   };
 
-  const handleCreateCourse = (e) => {
-    e.preventDefault();
-
-    const newCourse = {
-      id: Date.now(),
-      title: formData.title,
-      description: formData.description,
-      price: Number(formData.price),
-      category: formData.category,
-      level: formData.level,
-    };
-
-    setCourses((prev) => [newCourse, ...prev]);
-
+  const resetForm = () => {
     setFormData({
       title: "",
       description: "",
@@ -79,18 +72,63 @@ function InstructorDashboardCourses() {
       category: "",
       level: "",
     });
-
-    setIsModalOpen(false);
+    setEditingCourse(null);
   };
 
-  const handleDeleteCourse = (courseId) => {
-    setCourses((prev) =>
-      prev.filter((course) => course.id !== courseId)
-    );
+  const handleCreateCourse = async (e) => {
+    e.preventDefault();
+
+    try {
+      await createCourse(formData);
+
+      resetForm();
+      setIsModalOpen(false);
+
+      await fetchCourses();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to create course");
+    }
+  };
+
+  const handleDeleteCourse = async (courseId) => {
+    try {
+      await deleteCourse(courseId);
+      await fetchCourses();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete course");
+    }
+  };
+
+  const handleUpdateCourse = async (e) => {
+    e.preventDefault();
+
+    try {
+      const payload = {
+        title: formData.title || editingCourse.title,
+        description: formData.description || editingCourse.description,
+        price: formData.price || editingCourse.price,
+        category: formData.category || editingCourse.category,
+        level: formData.level || editingCourse.level,
+      };
+
+      await updateCourse(editingCourse.id, payload);
+
+      resetForm();
+      setIsModalOpen(false);
+
+      await fetchCourses();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update course");
+    }
   };
 
   return (
     <section className={styles.courses}>
+
+      {/* HEADER */}
       <div className={styles.header}>
         <div>
           <h1>Courses Management</h1>
@@ -99,13 +137,17 @@ function InstructorDashboardCourses() {
 
         <button
           className={styles.addBtn}
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            resetForm();
+            setIsModalOpen(true);
+          }}
         >
           <Plus size={18} />
           Create Course
         </button>
       </div>
 
+      {/* SEARCH */}
       <div className={styles.searchBox}>
         <Search size={20} />
         <input
@@ -116,14 +158,11 @@ function InstructorDashboardCourses() {
         />
       </div>
 
-      {loading && (
-        <div className={styles.message}>Loading courses...</div>
-      )}
+      {/* LOADING / ERROR */}
+      {loading && <div className={styles.message}>Loading courses...</div>}
+      {error && <div className={styles.error}>{error}</div>}
 
-      {error && (
-        <div className={styles.error}>{error}</div>
-      )}
-
+      {/* TABLE */}
       {!loading && !error && (
         <div className={styles.tableWrapper}>
           <table className={styles.table}>
@@ -147,17 +186,27 @@ function InstructorDashboardCourses() {
 
                   <td>
                     <div className={styles.actions}>
-                      <button>
+
+                      <button
+                        onClick={() => {
+                          setEditingCourse(course);
+                          setFormData({
+                            title: course.title || "",
+                            description: course.description || "",
+                            price: course.price || "",
+                            category: course.category || "",
+                            level: course.level || "",
+                          });
+                          setIsModalOpen(true);
+                        }}
+                      >
                         <Edit size={17} />
                       </button>
 
-                      <button
-                        onClick={() =>
-                          handleDeleteCourse(course.id)
-                        }
-                      >
+                      <button onClick={() => handleDeleteCourse(course.id)}>
                         <Trash2 size={17} />
                       </button>
+
                     </div>
                   </td>
                 </tr>
@@ -167,75 +216,79 @@ function InstructorDashboardCourses() {
         </div>
       )}
 
+      {/* MODAL */}
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
+
             <button
               className={styles.closeBtn}
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => {
+                setIsModalOpen(false);
+                resetForm();
+              }}
             >
               <X size={22} />
             </button>
 
-            <h2>Create New Course</h2>
+            <h2>
+              {editingCourse ? "Update Course" : "Create New Course"}
+            </h2>
+
             <p>Add a new course to your catalog.</p>
 
             <form
               className={styles.form}
-              onSubmit={handleCreateCourse}
+              onSubmit={editingCourse ? handleUpdateCourse : handleCreateCourse}
             >
-              <label>Course Title</label>
 
+              <label>Course Title</label>
               <input
-                type="text"
                 name="title"
-                placeholder="Enter course title"
                 value={formData.title}
                 onChange={handleChange}
-                required
+                required={!editingCourse}
               />
 
               <label>Description</label>
-
               <textarea
                 name="description"
-                placeholder="Enter course description"
                 value={formData.description}
                 onChange={handleChange}
-                required
+                required={!editingCourse}
               />
 
               <label>Price ($)</label>
-
               <input
-                type="number"
                 name="price"
-                placeholder="99.99"
+                type="number"
                 value={formData.price}
                 onChange={handleChange}
-                required
+                required={!editingCourse}
               />
 
               <div className={styles.modalActions}>
                 <button
                   type="button"
                   className={styles.cancelBtn}
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    resetForm();
+                  }}
                 >
                   Cancel
                 </button>
 
-                <button
-                  type="submit"
-                  className={styles.submitBtn}
-                >
-                  Create Course
+                <button type="submit" className={styles.submitBtn}>
+                  {editingCourse ? "Update Course" : "Create Course"}
                 </button>
               </div>
+
             </form>
           </div>
         </div>
       )}
+
     </section>
   );
 }
