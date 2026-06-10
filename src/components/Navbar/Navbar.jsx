@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import styles from './Navbar.module.css';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import JobRegister from '../layout/Register/JobRegister';
 
 export default function Navbar() {
   const { theme, toggle } = useTheme();
@@ -39,7 +40,7 @@ export default function Navbar() {
           <a href="#tracks"  onClick={() => setIsOpen(false)}>Tracks</a>
           <a href="#courses" onClick={() => setIsOpen(false)}>Courses</a>
           <a href="#about"   onClick={() => setIsOpen(false)}>About</a>
-          <a href="#jobs"    onClick={() => setIsOpen(false)}>Apply Job</a>
+          <Link to="/register-job">Apply Now</Link>
         </div>
 
         <div className={styles.authButtons}>
