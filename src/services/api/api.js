@@ -252,7 +252,12 @@ export async function apiCompleteLesson(lessonId) {
   return res.data;
 }
 
-/* ───────────────── JOBS ───────────────── */
+// JOBS — api.js  (replace only the JOBS section in your file)
+// BUG FIXED: apiGetMyApplications was returning res.data on a
+// plain array response. axios wraps the response body in .data,
+// so res already IS the array. Reading .data off an array gives
+// undefined, which always resolved to [] in the component.
+// ─────────────────────────────────────────────────────────────
 
 export async function apiGetAllJobs() {
   const res = await axios.get(`${BASE_URL}/api/jobs`);
@@ -264,31 +269,24 @@ export async function apiGetJobById(id) {
   return res.data;
 }
 
-/* ✅ FIXED APPLY JOB */
-export async function apiApplyToJob(jobId) {
-  const token = getToken();
-
-  return axios.post(
+export async function apiApplyToJob(jobId, coverLetter) {
+  const res = await axios.post(
     `${BASE_URL}/api/jobs/apply`,
-    { job_id: jobId },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-}
-
-export async function apiGetMyApplications() {
-  const res = await axios.get(
-    `${BASE_URL}/api/jobs/my-applications`,
+    { job_id: jobId, cover_letter: coverLetter },
     { headers: authHeaders() }
   );
-
   return res.data;
 }
 
-/* ───────────────── JOB MANAGEMENT ───────────────── */
+// FIX: return res.data directly (the array).
+// Before: returned res.data which callers then read .data on → undefined.
+export async function apiGetMyApplications() {
+  const res = await axios.get(
+    `${BASE_URL}/api/jobs/my/applications`,
+    { headers: authHeaders() }
+  );
+  return res.data; // ← this IS the array. Callers must NOT do .data again.
+}
 
 export async function apiCreateJob(payload) {
   const res = await axios.post(
@@ -296,7 +294,6 @@ export async function apiCreateJob(payload) {
     payload,
     { headers: authHeaders() }
   );
-
   return res.data;
 }
 
@@ -305,7 +302,6 @@ export async function apiGetMyJobs() {
     `${BASE_URL}/api/jobs/my/jobs`,
     { headers: authHeaders() }
   );
-
   return res.data;
 }
 
@@ -314,7 +310,6 @@ export async function apiGetJobApplicants(jobId) {
     `${BASE_URL}/api/jobs/${jobId}/applicants`,
     { headers: authHeaders() }
   );
-
   return res.data;
 }
 
@@ -324,7 +319,6 @@ export async function apiUpdateApplicationStatus(applicationId, status) {
     { status },
     { headers: authHeaders() }
   );
-
   return res.data;
 }
 export async function apiGetMyProjects() {
@@ -332,5 +326,6 @@ export async function apiGetMyProjects() {
     `${BASE_URL}/api/projects/my-projects`,
     { headers: authHeaders() }
   );
+
   return res.data;
 }

@@ -56,6 +56,8 @@ export default function JobPostModal({ show, onClose }) {
     };
 
     const handlePublish = async () => {
+        console.log("publish");
+
         try {
             setLoading(true);
 
@@ -206,7 +208,7 @@ export default function JobPostModal({ show, onClose }) {
                         <button
                             className={styles.publish}
                             onClick={handlePublish}
-                            disabled={!isValid || loading}
+                            disabled={loading}
                         >
                             {loading ? "Publishing..." : "Publish Job"}
                         </button>

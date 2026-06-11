@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/global.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+// import MyChats from "./pages/Chats/MyChats";
 
 /* Pages */
 import Home from "./pages/Home";
@@ -58,6 +59,13 @@ import DailyLearningHours from "./components/Progress/DailyLearningHours";
 import JobsPage from "./pages/Jobs/JobsPage.jsx";
 import Projects from "./pages/Projects/Projects.jsx";
 
+/* NEW */
+import MyJobsPage from "./pages/Jobs/MyJobsPage.jsx";
+import Applications from "./pages/Jobs/Applications.jsx"; // ✅ added
+import ChatPage from "./pages/Chat/ChatPage";
+import MyChats from "./pages/Chat/MyChats.jsx";
+
+/* ---------------- PROFILE ---------------- */
 
 const Profile = () => (
   <div style={{ background: "#0B0F19", minHeight: "100vh", width: "100%", padding: "40px 0", color: "white" }}>
@@ -81,6 +89,8 @@ const Profile = () => (
   </div>
 );
 
+/* ---------------- PROGRESS ---------------- */
+
 const ProgressPage = () => (
   <div style={{ backgroundColor: "#060814", minHeight: "100vh", padding: "40px 20px", color: "white" }}>
     <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -94,6 +104,8 @@ const ProgressPage = () => (
     </div>
   </div>
 );
+
+/* ---------------- APP ---------------- */
 
 export default function App() {
   useEffect(() => {
@@ -119,9 +131,7 @@ export default function App() {
       }
 
       try {
-        // send session to backend to synchronize or create user record
         await api.post("/api/auth/google-login", { user });
-        // Do NOT force navigation on app load — leave routing decisions to the app and ProtectedRoute.
       } catch (error) {
         console.error("Error sending token to backend:", error);
       }
@@ -135,7 +145,6 @@ export default function App() {
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },
     { path: "/register-job", element: <RegisterJob /> },
-    // { path: "/course-details/:id", element: <CourseDetails /> },
     { path: "/course/:id", element: <CourseDetails /> },
 
     {
@@ -178,26 +187,34 @@ export default function App() {
         { path: "projects", element: <Projects /> },
         { path: "chatbot", element: <Chatbot /> },
         { path: "jobs", element: <JobsPage /> },
+
+        { path: "my-jobs", element: <MyJobsPage /> },
+
+        // ✅ ADDED HERE
+        { path: "applications", element: <Applications /> },
+
         { path: "progress", element: <ProgressPage /> },
         { path: "softSkills", element: <SoftSkills /> },
         { path: "ranking", element: <Ranking /> },
         { path: "careertwin", element: <Career /> },
         { path: "community", element: <CommunityPage /> },
         { path: "live-session", element: <LiveSession /> },
+        { path: "chat/:chatId", element: <ChatPage /> },
+        { path: "my-chats", element: <MyChats /> },
       ],
     },
 
-    {path: "/admin",
- element: <AdminLayout />, 
- children: [
- { index: true, element: <AdminDashboard /> }, 
- { path: "admindashboard", element: <AdminDashboard /> },
- { path: "users", element: <AdminUsers /> },
- { path: "courses", element: <AdminCourses /> },
- { path: "lessons", element: <AdminLessons /> }
- ]
-},
-
+    {
+      path: "/admin",
+      element: <AdminLayout />,
+      children: [
+        { index: true, element: <AdminDashboard /> },
+        { path: "admindashboard", element: <AdminDashboard /> },
+        { path: "users", element: <AdminUsers /> },
+        { path: "courses", element: <AdminCourses /> },
+        { path: "lessons", element: <AdminLessons /> }
+      ]
+    },
   ]);
 
   return <RouterProvider router={Router} />;

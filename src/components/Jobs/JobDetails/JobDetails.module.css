@@ -187,3 +187,55 @@
   border-radius: 20px;
   border: 1px solid;
 }
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: #fff;
+  color: #111;
+  padding: 20px;
+  border-radius: 12px;
+  width: 500px;
+}
+
+.modal textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  color: #111;
+  background: #f9fafb;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.modalActions button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.modalActions button:first-child {
+  background: #e5e7eb;
+}
+
+.modalActions button:last-child {
+  background: #3b82f6;
+  color: white;
+}

@@ -1,0 +1,66 @@
+/* MyJobsPage.module.css */
+
+.page {
+    padding: 24px;
+    min-height: 100vh;
+    background: var(--bg, #0b0f19);
+    color: var(--text, #ffffff);
+}
+
+.title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.empty {
+    color: #9ca3af;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Jobs grid */
+.jobsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Job card */
+.jobCard {
+    background: var(--card, #111827);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 16px;
+    transition: 0.2s ease;
+}
+
+.jobCard:hover {
+    transform: translateY(-2px);
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+/* Job header */
+.jobHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.jobTitle {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.jobCompany {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+/* Applicants section */
+.applicantsBox {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
