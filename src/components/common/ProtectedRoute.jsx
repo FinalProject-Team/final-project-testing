@@ -5,6 +5,13 @@
  *   allowedRoles?    string[]  – if omitted, any authenticated user passes
  *   requirePayment?  boolean   – if true, student must have paid; redirects to '/' otherwise
  *   redirectTo?      string    – where to send unauthenticated users (default: /login)
+ *
+ * Roles:
+ *   student     – learning platform user (requires payment for /dashboard)
+ *   job_seeker  – can post jobs, manage applicants
+ *   normal_user – can browse/apply for jobs, view application status, chat if accepted
+ *   instructor  – course instructor
+ *   admin       – platform admin
  */
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -41,13 +48,11 @@ export default function ProtectedRoute({
     return <Navigate to={redirectTo} state={{ from: location }} replace />;
   }
 
-
   // 3. Role not yet known (backend slow/offline) — still loading
-  //    Only block if we need to role-check AND role is null
   if (allowedRoles && allowedRoles.length > 0 && role === null) {
-    // Role is still being fetched from backend — show loading state instead of redirecting.
     return <Spinner />;
   }
+
   // 4. Wrong role → redirect to user's own dashboard
   if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(role)) {
     if (role === 'admin')      return <Navigate to="/admin" replace />;
@@ -55,8 +60,8 @@ export default function ProtectedRoute({
     return <Navigate to="/" replace />;
   }
 
-  // 5. Dashboard requires payment (student only)
-  //    job_seeker / instructor / admin always bypass this check
+  // 5. Dashboard requires payment for students only.
+  //    job_seeker, normal_user, instructor, admin always bypass this check.
   if (requirePayment && role === 'student' && !hasPaid) {
     return <Navigate to="/payment" state={{ from: location }} replace />;
   }

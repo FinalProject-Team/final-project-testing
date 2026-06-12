@@ -1,4 +1,4 @@
-﻿import { createContext, useContext, useEffect, useState, useRef } from 'react';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { apiLogin, apiGoogleLogin, apiGetMe } from '../services/api/api';
 
@@ -148,8 +148,18 @@ export function AuthProvider({ children }) {
     if (!user) return '/';
     if (role === 'admin') return '/admin';
     if (role === 'instructor') return '/instructor/dashboard';
+    // student, job_seeker, and normal_user all go to /dashboard
     return '/dashboard/dashboard';
   };
+
+  // Helper to check if user can apply for jobs (student or normal_user)
+  const canApplyForJobs = role === 'student' || role === 'normal_user';
+
+  // Helper to check if user can post/manage jobs (job_seeker only)
+  const canPostJobs = role === 'job_seeker';
+
+  // Helper: is job seeker (for backwards compat)
+  const isJobSeeker = role === 'job_seeker';
 
   const value = {
     user,
@@ -163,6 +173,9 @@ export function AuthProvider({ children }) {
     markPaid,
     signOut,
     getDashboardPath,
+    canApplyForJobs,
+    canPostJobs,
+    isJobSeeker,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

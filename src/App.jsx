@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/global.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-// import MyChats from "./pages/Chats/MyChats";
 
 /* Pages */
 import Home from "./pages/Home";
@@ -14,6 +13,7 @@ import Dashboard from "./components/layout/Dashboard/Dashboard";
 import Career from "./components/layout/Career Twin/Career";
 import Register from "./components/layout/Register/Register";
 import RegisterJob from "./components/layout/Register/JobRegister";
+import NormalUserRegister from "./components/layout/Register/NormalUserRegister";
 import CourseDetails from "./pages/CourseDetails/CourseDetails";
 import LiveSession from "./components/LiveSessions/LiveSession";
 import CommunityPage from "./pages/Community";
@@ -59,9 +59,9 @@ import DailyLearningHours from "./components/Progress/DailyLearningHours";
 import JobsPage from "./pages/Jobs/JobsPage.jsx";
 import Projects from "./pages/Projects/Projects.jsx";
 
-/* NEW */
+/* Jobs & Chat */
 import MyJobsPage from "./pages/Jobs/MyJobsPage.jsx";
-import Applications from "./pages/Jobs/Applications.jsx"; // ✅ added
+import Applications from "./pages/Jobs/Applications.jsx";
 import ChatPage from "./pages/Chat/ChatPage";
 import MyChats from "./pages/Chat/MyChats.jsx";
 
@@ -117,11 +117,9 @@ export default function App() {
     const getSessionAndSendToBackend = async () => {
       const { data } = await supabase.auth.getSession();
       const user = data?.session?.user;
-
       if (!user) return;
 
       const currentPath = window.location.pathname;
-
       if (
         currentPath.startsWith("/dashboard") ||
         currentPath.startsWith("/admin") ||
@@ -145,6 +143,8 @@ export default function App() {
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },
     { path: "/register-job", element: <RegisterJob /> },
+    // NEW: registration page for normal_user role
+    { path: "/register-normal", element: <NormalUserRegister /> },
     { path: "/course/:id", element: <CourseDetails /> },
 
     {
@@ -176,6 +176,10 @@ export default function App() {
     {
       path: "/dashboard",
       element: (
+        /**
+         * requirePayment only enforces payment for 'student' role.
+         * job_seeker and normal_user bypass payment check (see ProtectedRoute).
+         */
         <ProtectedRoute requirePayment={true}>
           <Layout />
         </ProtectedRoute>
@@ -187,12 +191,8 @@ export default function App() {
         { path: "projects", element: <Projects /> },
         { path: "chatbot", element: <Chatbot /> },
         { path: "jobs", element: <JobsPage /> },
-
         { path: "my-jobs", element: <MyJobsPage /> },
-
-        // ✅ ADDED HERE
         { path: "applications", element: <Applications /> },
-
         { path: "progress", element: <ProgressPage /> },
         { path: "softSkills", element: <SoftSkills /> },
         { path: "ranking", element: <Ranking /> },
@@ -212,8 +212,8 @@ export default function App() {
         { path: "admindashboard", element: <AdminDashboard /> },
         { path: "users", element: <AdminUsers /> },
         { path: "courses", element: <AdminCourses /> },
-        { path: "lessons", element: <AdminLessons /> }
-      ]
+        { path: "lessons", element: <AdminLessons /> },
+      ],
     },
   ]);
 
