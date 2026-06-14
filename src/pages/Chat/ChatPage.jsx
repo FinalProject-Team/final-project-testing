@@ -1,10 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { BASE_URL } from "../../services/api/api";
 
-const BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://final-project-backend-production-214a.up.railway.app";
+const API_BASE_URL = BASE_URL;
 
 export default function ChatPage() {
   const { chatId } = useParams();
@@ -37,7 +36,7 @@ export default function ChatPage() {
     const fetchMessages = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`${BASE_URL}/chats/${chatId}/messages`, {
+        const res = await fetch(`${API_BASE_URL}/chats/${chatId}/messages`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) return;
@@ -65,7 +64,7 @@ export default function ChatPage() {
     setSending(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${BASE_URL}/chats/${chatId}/messages`, {
+      const res = await fetch(`${API_BASE_URL}/chats/${chatId}/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

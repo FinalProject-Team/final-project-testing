@@ -1,32 +1,25 @@
 import { useState, useRef, useEffect } from 'react';
-import { BsBriefcaseFill } from 'react-icons/bs';
 import { useAuth } from '../../context/AuthContext';
-import { apiGetAllJobs, apiApplyToJob, apiGetMyApplications } from '../../services/api/api';
+import { apiGetAllJobs, apiGetMyApplications } from '../../services/api/api';
 import styles from './JobsPage.module.css';
-
+import Topbar from '../../components/layout/Topbar/Topbar';
 import StatsCards from '../../components/Jobs/StatsCards/StatsCards';
-import SearchBar from '../../components/Jobs/SearchBar/SearchBar';
 import JobCard from '../../components/Jobs/JobCard/JobCard';
 import JobDetails from '../../components/Jobs/JobDetails/JobDetails';
-import JobPostModal from "../../pages/Jobs/JobPostModal.jsx";
-export default function JobsPage() {
+
+export default function PublicJobsPage() {
   const [jobs, setJobs] = useState([]);
-  const [filtersVisible, setFiltersVisible] = useState(false);
-  const [filters, setFilters] = useState({ job_type: '', location: '' });
   const [myApps, setMyApps] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [applying, setApplying] = useState(null);
   const [error, setError] = useState(null);
-  const [tab, setTab] = useState('browse'); // 'browse' | 'applied'
   const [search, setSearch] = useState('');
   const sidebarRef = useRef(null);
 
-
   const [selectedJob, setSelectedJob] = useState(null);
-  const [showPostModal, setShowPostModal] = useState(false);
+  const [filtersVisible, setFiltersVisible] = useState(false);
+  const [filters, setFilters] = useState({ job_type: '', location: '' });
 
-
-  const { isAuthenticated, isJobSeeker } = useAuth();
+  const { isAuthenticated } = useAuth();
   const mounted = useRef(true);
 
   useEffect(() => {
@@ -55,22 +48,6 @@ export default function JobsPage() {
     return () => { mounted.current = false; };
   }, [isAuthenticated]);
 
-  const handleApply = async (jobId) => {
-    if (!isAuthenticated) { alert('Please log in to apply.'); return; }
-    setApplying(jobId);
-    try {
-      await apiApplyToJob(jobId);
-      if (mounted.current) {
-        setMyApps(prev => [...prev, { job_id: jobId }]);
-        alert('Application submitted!');
-      }
-    } catch (err) {
-      alert(err?.response?.data?.message || 'Failed to apply.');
-    } finally {
-      if (mounted.current) setApplying(null);
-    }
-  };
-
   const appliedIds = new Set(myApps.map(a => String(a.job_id || a.id)));
 
   const filtered = jobs.filter(j => {
@@ -92,30 +69,25 @@ export default function JobsPage() {
     setSelectedJob(job);
   };
 
-
-
-
-
   return (
-    <div className={styles.page}>
-      <StatsCards />
-
-      <div className={styles.headerActions}>
-        <button
-          className={styles.postBtn}
-          onClick={() => setShowPostModal(true)}
-        >
-          Post Job
-        </button>
-      </div>
+    <div>
+      <div className={styles.page}>
+        <Topbar
+          title="Public Job Board"
+          searchValue={search}
+          onSearchChange={setSearch}
+          metaLabel={`${jobs.length} jobs available`}
+        />
+        <StatsCards />
 
       <div className={styles.body}>
         <div className={styles.left}>
-          <SearchBar
-            value={search}
-            onChange={setSearch}
-            onFilterClick={() => setFiltersVisible(v => !v)}
-          />
+          <div className={styles.filterBar}>
+            <button className={styles.filterToggle} onClick={() => setFiltersVisible(v => !v)}>
+              Filter
+            </button>
+            <div className={styles.filterInfo}>Search is available in the top bar.</div>
+          </div>
 
           {filtersVisible && (
             <div style={{ padding: 12, background: '#0b0f19', borderRadius: 8, marginBottom: 12 }}>
@@ -183,13 +155,8 @@ export default function JobsPage() {
         </div>
       </div>
 
-      <JobPostModal
-        show={showPostModal}
-        onClose={() =>
-          setShowPostModal(false)
-        }
-      />
-    </div>
+      </div>
 
+    </div>
   );
 }

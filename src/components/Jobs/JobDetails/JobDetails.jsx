@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
 import styles from './JobDetails.module.css';
 import {
   apiApplyToJob,
@@ -29,6 +31,9 @@ export default function JobDetails({ job, user }) {
 
   const submittingRef = useRef(false);
 
+  const navigate = useNavigate();
+  const { isAuthenticated, role } = useAuth();
+
   // ───────────────── MY APPLICATIONS (student) ─────────────────
   useEffect(() => {
     if (!job) return;
@@ -38,6 +43,10 @@ export default function JobDetails({ job, user }) {
     const fetchApplications = async () => {
       try {
         setAppsLoading(true);
+        if (!isAuthenticated) {
+          if (isMounted) setApplications([]);
+          return;
+        }
         const data = await apiGetMyApplications();
         if (isMounted) setApplications(Array.isArray(data) ? data : []);
       } catch {
@@ -52,7 +61,7 @@ export default function JobDetails({ job, user }) {
     return () => {
       isMounted = false;
     };
-  }, [job]);
+  }, [job, isAuthenticated]);
 
   // ───────────────── APPLICANTS (owner only) ─────────────────
   useEffect(() => {
@@ -84,7 +93,12 @@ export default function JobDetails({ job, user }) {
   const canApply = !appsLoading && !alreadyApplied && !applying;
 
   const handleApply = () => {
-    if (!canApply) return;
+    if (!isAuthenticated) {
+      sessionStorage.setItem('returnPath', `/jobs`);
+      navigate('/login', { state: { from: { pathname: `/jobs` } } });
+      return;
+    }
+
     setApplyError(null);
     setShowApplyModal(true);
   };
@@ -101,7 +115,9 @@ export default function JobDetails({ job, user }) {
     setApplying(true);
 
     try {
+      console.log('[JobDetails] Submitting application for job:', job.id);
       await apiApplyToJob(job.id, coverLetter);
+      console.log('[JobDetails] Application submitted successfully');
 
       setShowApplyModal(false);
       setCoverLetter('');
@@ -110,6 +126,7 @@ export default function JobDetails({ job, user }) {
       setApplications(Array.isArray(refreshed) ? refreshed : []);
 
     } catch (err) {
+      console.error('[JobDetails] Apply error:', err.response?.status, err.response?.data);
       setApplyError(err.response?.data?.message || 'Error applying');
     } finally {
       submittingRef.current = false;
@@ -157,7 +174,7 @@ export default function JobDetails({ job, user }) {
                 You already applied
               </div>
             ) : (
-              <button onClick={handleApply} disabled={!canApply}>
+              <button className={styles.applyBtn} type="button" onClick={handleApply}>
                 Apply Now
               </button>
             )}
@@ -219,12 +236,12 @@ export default function JobDetails({ job, user }) {
                 <p>{app.user?.email}</p>
               </div>
 
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button onClick={() => updateStatus(app.id, 'accepted')}>
+              <div className={styles.actionButtonGroup}>
+                <button className={`${styles.actionBtn} ${styles.acceptBtn}`} onClick={() => updateStatus(app.id, 'accepted')}>
                   Accept
                 </button>
 
-                <button onClick={() => updateStatus(app.id, 'rejected')}>
+                <button className={`${styles.actionBtn} ${styles.rejectBtn}`} onClick={() => updateStatus(app.id, 'rejected')}>
                   Reject
                 </button>
               </div>
@@ -238,23 +255,34 @@ export default function JobDetails({ job, user }) {
       {showApplyModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
-            <h3>Apply</h3>
+            <h3 className={styles.modalTitle}>Apply for this job</h3>
 
             <textarea
+              className={styles.modalTextarea}
               value={coverLetter}
               onChange={(e) => setCoverLetter(e.target.value)}
               placeholder="Write your cover letter..."
             />
 
-            {applyError && <p>{applyError}</p>}
+            {applyError && <p className={styles.modalError}>{applyError}</p>}
 
-            <button onClick={() => setShowApplyModal(false)}>
-              Cancel
-            </button>
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                className={`${styles.actionBtn} ${styles.cancelBtn}`}
+                onClick={() => setShowApplyModal(false)}
+              >
+                Cancel
+              </button>
 
-            <button onClick={submitApplication}>
-              Submit
-            </button>
+              <button
+                type="button"
+                className={`${styles.actionBtn} ${styles.submitBtn}`}
+                onClick={submitApplication}
+              >
+                Submit
+              </button>
+            </div>
           </div>
         </div>
       )}

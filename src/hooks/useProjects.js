@@ -17,45 +17,40 @@ export function useProjects() {
   // 1. API CALL
   // =======================
   useEffect(() => {
+    let mounted = true;
     const load = async () => {
       try {
         setLoading(true);
+        setError(null);
 
-        const projects = await projectsService.getAll();
-        setAllProjects(projects);
+        const params = {
+          search: searchQuery?.trim() || undefined,
+          status: activeFilter && activeFilter !== 'all' ? activeFilter : undefined,
+        };
+
+        const projects = await projectsService.getAll(params);
+        console.debug('[useProjects] fetched projects count=', Array.isArray(projects) ? projects.length : (projects?.length || 0), 'params=', params);
+        if (!mounted) return;
+        setAllProjects(projects || []);
 
       } catch (err) {
-        setError(err.message);
+        if (!mounted) return;
+        setError(err?.message || String(err));
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
 
-    load();
-  }, []);
+    const timer = setTimeout(load, 300); // debounce rapid changes
+    return () => { mounted = false; clearTimeout(timer); };
+  }, [searchQuery, activeFilter]);
 
   // =======================
-  // 2. FILTERED PROJECTS
+  // 2. SERVER-CONTROLLED PROJECTS
   // =======================
-  const filteredProjects = useMemo(() => {
-    let projects = allProjects;
-
-    const q = searchQuery.trim().toLowerCase();
-
-    if (q) {
-      projects = projects.filter(p =>
-        p.title?.toLowerCase().includes(q)
-      );
-    }
-
-    if (activeFilter !== 'all') {
-      projects = projects.filter(
-        p => normalizeStatus(p.status) === activeFilter
-      );
-    }
-
-    return projects;
-  }, [allProjects, searchQuery, activeFilter]);
+  // Server returns results according to `search` and `status` params.
+  // We no longer apply client-side filtering — use the server-provided list.
+  const filteredProjects = useMemo(() => allProjects, [allProjects]);
 
   // =======================
   // 3. STATS

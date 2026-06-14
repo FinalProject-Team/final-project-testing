@@ -20,6 +20,7 @@ import {
   updateAuthProfile,
   updateInstructorProfile,
 } from "../../../services/api/instructorService";
+import { BASE_URL } from "../../../services/api/api";
 
 import styles from "./InstructorDashboardProfile.module.css";
 
@@ -171,7 +172,7 @@ function InstructorDashboardProfile() {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        "http://localhost:5000/api/auth/upload-avatar",
+        `${BASE_URL}/api/auth/upload-avatar`,
         {
           method: "POST",
           headers: {

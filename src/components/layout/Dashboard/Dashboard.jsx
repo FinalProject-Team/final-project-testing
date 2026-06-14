@@ -1,31 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Dashboard.module.css';
 import { getDashboardStats } from '../services/dashboardServices';
+import {
+  apiGetRecentActivity,
+  apiGetContinueLearning,
+} from '../../../services/api/api';
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [continueLearning, setContinueLearning] = useState([]);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchAll = async () => {
       try {
         const data = await getDashboardStats();
         setStats(data);
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
-      } finally {
-        setLoading(false);
       }
+
+      try {
+        const activity = await apiGetRecentActivity();
+        const list = Array.isArray(activity) ? activity : activity?.data || [];
+        setRecentActivity(list.slice(0, 3));
+      } catch {
+        setRecentActivity([]);
+      }
+
+      try {
+        const cl = await apiGetContinueLearning();
+        const list = Array.isArray(cl) ? cl : cl?.data || [];
+        setContinueLearning(list.slice(0, 3));
+      } catch {
+        setContinueLearning([]);
+      }
+
+      setLoading(false);
     };
 
-    fetchStats();
+    fetchAll();
   }, []);
 
   if (loading) {
     return <div style={{ padding: '20px', color: 'white' }}>Loading Dashboard...</div>;
   }
 
-  // حماية الكود من الكراش
   const displayData = stats || {
     user: { full_name: "Developer", level: "Mid-Level Developer" },
     scheduled: { lessons: 0, assessments: 0 },
@@ -136,72 +157,81 @@ export default function Dashboard() {
       </div>
 
       <div className={styles.bottomGrid}>
+        {/* TODAY'S SCHEDULE — driven by continue-learning API */}
         <div className={styles.bottomCard}>
           <div className={styles.cardHeaderWithIcon}>
             <h4>Today's Schedule</h4>
             <span className={styles.headerIcon}>🕒</span>
           </div>
-          <div className={styles.scheduleItem}>
-            <div className={styles.scheduleLeft}>
-              <h5>React Hooks Deep Dive</h5>
-              <span>10:00 AM</span>
-            </div>
-            <span className={`${styles.tag} ${styles.lessonTag}`}>Lesson</span>
-          </div>
-          <div className={styles.scheduleItem}>
-            <div className={styles.scheduleLeft}>
-              <h5>Weekly Assessment</h5>
-              <span>2:00 PM</span>
-            </div>
-            <span className={`${styles.tag} ${styles.examTag}`}>Exam</span>
-          </div>
-          <div className={styles.scheduleItem}>
-            <div className={styles.scheduleLeft}>
-              <h5>Portfolio Review</h5>
-              <span>4:30 PM</span>
-            </div>
-            <span className={`${styles.tag} ${styles.mentorTag}`}>Mentorship</span>
-          </div>
+
+          {continueLearning.length === 0 ? (
+            <p style={{ opacity: 0.5, fontSize: '0.85rem' }}>No scheduled items for today.</p>
+          ) : (
+            continueLearning.map((item, i) => (
+              <div className={styles.scheduleItem} key={item.id || i}>
+                <div className={styles.scheduleLeft}>
+                  <h5>{item.course_title || item.title || 'Lesson'}</h5>
+                  <span>{item.lesson_title || item.next_lesson || ''}</span>
+                </div>
+                <span className={`${styles.tag} ${styles.lessonTag}`}>
+                  {item.type || 'Lesson'}
+                </span>
+              </div>
+            ))
+          )}
         </div>
 
+        {/* RECENT ACTIVITY — driven by recent-activity API */}
         <div className={styles.bottomCard}>
           <div className={styles.cardHeaderWithIcon}>
             <h4>Recent Activity</h4>
             <span className={styles.headerIcon}>🔔</span>
           </div>
-          <div className={styles.activityItem}>
-            <span className={`${styles.activityIcon} ${styles.blueCircle}`}>💻</span>
-            <div className={styles.activityContent}>
-              <p>Completed <strong>"CSS Grid"</strong> lesson</p>
-              <span>2h ago</span>
-            </div>
-          </div>
-          <div className={styles.activityItem}>
-            <span className={`${styles.activityIcon} ${styles.yellowCircle}`}>🏅</span>
-            <div className={styles.activityContent}>
-              <p>Earned <strong>"Week Streak"</strong> badge</p>
-              <span>5h ago</span>
-            </div>
-          </div>
+
+          {recentActivity.length === 0 ? (
+            <p style={{ opacity: 0.5, fontSize: '0.85rem' }}>No recent activity yet.</p>
+          ) : (
+            recentActivity.map((item, i) => (
+              <div className={styles.activityItem} key={item.id || i}>
+                <span className={`${styles.activityIcon} ${styles.blueCircle}`}>💻</span>
+                <div className={styles.activityContent}>
+                  <p>
+                    {item.action || 'Completed'}{' '}
+                    {item.lesson_title || item.course_title || item.title
+                      ? <strong>"{item.lesson_title || item.course_title || item.title}"</strong>
+                      : null}
+                  </p>
+                  <span>{item.time_ago || item.created_at || ''}</span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
+        {/* RECOMMENDED NEXT — driven by continue-learning API */}
         <div className={styles.bottomCard}>
           <div className={styles.cardHeaderWithIcon}>
             <h4>Recommended Next</h4>
             <span className={styles.headerIcon}>🎯</span>
           </div>
-          <ul className={styles.recommendList}>
-            <li>
-              <span className={styles.bulletBlue}>•</span>
-              <p>Complete <strong>React Hooks</strong> module</p>
-              <span className={styles.xpGain}>+120</span>
-            </li>
-            <li>
-              <span className={styles.bulletYellow}>•</span>
-              <p>Build <strong>Todo App</strong> project</p>
-              <span className={styles.xpGain}>+250</span>
-            </li>
-          </ul>
+
+          {continueLearning.length === 0 ? (
+            <p style={{ opacity: 0.5, fontSize: '0.85rem' }}>Complete a course to get recommendations.</p>
+          ) : (
+            <ul className={styles.recommendList}>
+              {continueLearning.map((item, i) => (
+                <li key={item.id || i}>
+                  <span className={i % 2 === 0 ? styles.bulletBlue : styles.bulletYellow}>•</span>
+                  <p>
+                    Continue <strong>{item.course_title || item.title || 'course'}</strong>
+                  </p>
+                  <span className={styles.xpGain}>
+                    {item.progress_percentage != null ? `${item.progress_percentage}%` : ''}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </div>

@@ -20,7 +20,7 @@
 .cardTitle {
   font-size: 20px;
   font-weight: 700;
-  color: #ffffff !important;
+  color: var(--text-primary) !important;
   margin-bottom: 28px;
   text-align: left;
 }
@@ -52,7 +52,7 @@
 .uploadTitle {
   font-size: 16px;
   font-weight: 600;
-  color: #ffffff !important;
+  color: var(--text-primary) !important;
   margin: 0 0 4px 0;
 }
 

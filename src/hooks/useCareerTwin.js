@@ -1,10 +1,15 @@
 /**
  * useCareerTwin — fetches real student data from API then runs AI analysis
- * APIs: apiGetMe, apiGetMyProgress, apiGetDashboardStats, apiGetRoadmap
+ * APIs: getStudentProfile, getStudentProgress, getStudentStats, getStudentRoadmap
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { analyzeStudentProgress } from '../services/careerTwin/careerTwinAI';
-import { apiGetMe, apiGetMyProgress, apiGetDashboardStats, apiGetRoadmap } from '../services/api/api';
+import { 
+  getStudentProfile, 
+  getStudentProgress, 
+  getStudentStats, 
+  getStudentRoadmap 
+} from '../services/careerTwin/careerTwinService';
 
 const TRACK_MAP=[
   {kw:['frontend','react','vue','angular','css','html','next'],t:'Frontend Development'},
@@ -37,7 +42,7 @@ export function useCareerTwin(){
     setState(s=>({...s,loading:true,error:null}));
     mounted.current=true;
     try{
-      const[meR,progR,statsR,roadR]=await Promise.allSettled([apiGetMe(),apiGetMyProgress(),apiGetDashboardStats(),apiGetRoadmap()]);
+      const[meR,progR,statsR,roadR]=await Promise.allSettled([getStudentProfile(),getStudentProgress(),getStudentStats(),getStudentRoadmap()]);
       if(!mounted.current)return;
 
       const me=meR.status==='fulfilled'?(meR.value?.user||meR.value):{};

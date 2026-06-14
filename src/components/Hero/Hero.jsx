@@ -1,6 +1,24 @@
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import styles from './Hero.module.css';
 
 export default function Hero() {
+  const navigate = useNavigate();
+  const { hasPaid, getDashboardPath } = useAuth();
+
+  const handleStartLearning = () => {
+    if (hasPaid) {
+      navigate(getDashboardPath());
+      return;
+    }
+
+    document.getElementById('coursesHero')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleExploreTracks = () => {
+    document.getElementById('coursesHero')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <section className={styles.hero}>
       {/* Background glow blobs */}
@@ -28,19 +46,19 @@ export default function Hero() {
           </p>
 
           <div className={styles.buttons}>
-            <button className={styles.primaryBtn}>
+            <button type="button" className={styles.primaryBtn} onClick={handleStartLearning}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="white" strokeLinejoin="round"/>
-              </svg>
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor" strokeLinejoin="round"/>
+                </svg>
               Start Learning
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
-            <button className={styles.secondaryBtn}>
+            <button type="button" className={styles.secondaryBtn} onClick={handleExploreTracks}>
               <svg width="13" height="15" viewBox="0 0 24 24" fill="none">
-                <polygon points="5,3 19,12 5,21" fill="white"/>
-              </svg>
+                  <polygon points="5,3 19,12 5,21" fill="currentColor"/>
+                </svg>
               Explore Tracks
             </button>
           </div>
@@ -73,7 +91,7 @@ export default function Hero() {
             <div className={styles.orbitCenter}>
               <svg width="42" height="42" viewBox="0 0 24 24" fill="none">
                 <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="#00d4ff"/>
-                <path d="M12 6l1.5 4.6H18l-3.9 2.8 1.5 4.6L12 15.3 8.4 18l1.5-4.6L6 10.6h4.5L12 6z" fill="white"/>
+                <path d="M12 6l1.5 4.6H18l-3.9 2.8 1.5 4.6L12 15.3 8.4 18l1.5-4.6L6 10.6h4.5L12 6z" fill="currentColor"/>
               </svg>
             </div>
 

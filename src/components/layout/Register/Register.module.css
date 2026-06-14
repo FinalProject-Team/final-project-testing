@@ -12,13 +12,13 @@
 .card {
     background-color: #0d1527; 
     border: 1px solid #16223f;
-    border-radius: 16px;
-    padding: 40px 30px;
+    border-radius: 20px;
+    padding: 36px 32px;
     width: 100%;
-    max-width: 450px;
+    max-width: 440px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
@@ -35,15 +35,16 @@
 }
 
 .subtitle {
-    color: #566785;
-    font-size: 13px;
-    margin-bottom: 30px;
+    color: #9cb3d6;
+    font-size: 14px;
+    margin-bottom: 28px;
+    line-height: 1.6;
 }
 
 .form {
     display: flex;
     flex-direction: column;
-    gap: 16px; 
+    gap: 18px; 
 }
 
 .inputGroup {
@@ -67,6 +68,7 @@
     font-size: 16px;
     cursor: pointer;
     transition: color 0.2s ease;
+    z-index: 1;
 }
 
 .iconRight:hover {
@@ -77,12 +79,13 @@
     width: 100%;
     background-color: #0a0f1d;
     border: 1px solid #1a2647;
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 14px 14px 14px 42px; 
     color: #ffffff;
     font-size: 14px;
     outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    appearance: none;
 }
 
 .inputPassword {
@@ -91,6 +94,16 @@
 
 .input::placeholder {
     color: #4a5a75;
+}
+
+.input:hover,
+.input:focus {
+    transform: translateY(-1px);
+}
+
+select.input {
+    padding-right: 38px;
+    cursor: pointer;
 }
 
 .input:focus {
@@ -106,20 +119,21 @@
 
 .btn {
     width: 100%; 
-    background: linear-gradient(to right, #4c7293, #81a4c4);
+    background: linear-gradient(135deg, #4c7293, #81a4c4);
     border: none;
-    border-radius: 8px;
-    padding: 14px;
+    border-radius: 12px;
+    padding: 15px 16px;
     color: #ffffff;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
     margin-top: 10px;
-    transition: opacity 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 10px 20px rgba(26, 115, 232, 0.15);
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .btnIcon {
@@ -135,9 +149,20 @@
 }
 
 .footerText {
-    color: #566785;
+    color: #9cb3d6;
     font-size: 13px;
-    margin-top: 25px;
+    margin-top: 24px;
+    line-height: 1.7;
+}
+
+.footerText a {
+    color: #aad4ff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.footerText a:hover {
+    color: #ffffff;
 }
 
 .loginLink {
@@ -196,6 +221,11 @@
 .googleBtn:hover {
     background-color: #111a30;
     border-color: #3b82f6;
+}
+
+.googleBtn:focus {
+    outline: 2px solid rgba(59, 130, 246, 0.6);
+    outline-offset: 2px;
 }
 
 .googleIcon {

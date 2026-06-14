@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 
 import Header from "../../components/Header/Header";
 import InstructorCard from "../../components/InstructorCard/InstructorCard";
 import StatsCards from "../../components/StatsCards/StatsCards";
 import RoadmapSection from "../../components/RoadmapSection/RoadmapSection";
 import PriceCard from "../../components/PriceCard/PriceCard";
+import { apiGetCourseById, apiGetCourseLessons } from "../../services/api/api";
 
 import styles from "./CourseDetails.module.css";
 
@@ -21,41 +21,29 @@ export default function CourseDetails() {
       try {
         setLoading(true);
 
-        const courseRes = await axios.get(
-          `https://final-project-backend-production-214a.up.railway.app/api/courses/${id}`
-        );
+        const courseData = await apiGetCourseById(id);
 
         let lessonsData = [];
 
         try {
-          const token = localStorage.getItem("token");
-
-          const lessonsRes = await axios.get(
-            `https://final-project-backend-production-214a.up.railway.app/api/courses/${id}/lessons`,
-            {
-              headers: {
-                Authorization: token?.startsWith("Bearer ")
-                  ? token
-                  : `Bearer ${token}`,
+          const lessonsRes = await apiGetCourseLessons(id);
+          lessonsData = Array.isArray(lessonsRes) ? lessonsRes : lessonsRes?.lessons || [];
+        } catch {
+          if (courseData?.video_preview) {
+            lessonsData = [
+              {
+                id: "preview",
+                title: "Free Preview",
+                video_url: courseData.video_preview,
+                lesson_order: 1,
+                duration: "Preview",
               },
-            }
-          );
-
-          lessonsData = lessonsRes.data || [];
-        } catch (lessonError) {
-          lessonsData = [
-            {
-              id: "preview",
-              title: "Free Preview",
-              video_url: courseRes.data.video_preview,
-              lesson_order: 1,
-              duration: "Preview",
-            },
-          ];
+            ];
+          }
         }
 
         setCourse({
-          ...courseRes.data,
+          ...courseData,
           lessons: lessonsData,
           isPurchased: false,
         });

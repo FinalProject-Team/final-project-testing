@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL =
+export const BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   "https://final-project-backend-production-214a.up.railway.app";
 
@@ -321,11 +321,210 @@ export async function apiUpdateApplicationStatus(applicationId, status) {
   );
   return res.data;
 }
-export async function apiGetMyProjects() {
+export async function apiGetMyProjects(params = {}) {
   const res = await axios.get(
     `${BASE_URL}/api/projects/my-projects`,
-    { headers: authHeaders() }
+    { params, headers: authHeaders() }
   );
 
   return res.data;
 }
+  /* ───────────────── LEADERBOARD & RANKINGS ───────────────── */
+
+export async function apiGetLeaderboard() {
+  const res = await axios.get(
+    `${BASE_URL}/api/ranking`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiGetMyRank() {
+  const res = await axios.get(
+    `${BASE_URL}/api/ranking/me`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+/* ───────────────── PROGRESS DASHBOARD ───────────────── */
+
+export async function apiGetProgressDashboard() {
+  const res = await axios.get(
+    `${BASE_URL}/api/progress/progress-dashboard`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiAddLearningTime(hours) {
+  const res = await axios.post(
+    `${BASE_URL}/api/progress/learning-time`,
+    { hours },
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiGetDashboardSummary() {
+  const res = await axios.get(
+    `${BASE_URL}/api/progress/dashboard-summary`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+/* ───────────────── NOTIFICATIONS ───────────────── */
+
+export async function apiGetNotifications() {
+  const res = await axios.get(
+    `${BASE_URL}/notifications`,
+    { headers: authHeaders() }
+  );
+  const data = res.data;
+  return Array.isArray(data) ? data : data.notifications || [];
+}
+
+export async function apiGetUnreadNotificationCount() {
+  const res = await axios.get(
+    `${BASE_URL}/notifications/unread-count`,
+    { headers: authHeaders() }
+  );
+  return res.data?.unread ?? 0;
+}
+
+export async function apiMarkNotificationRead(id) {
+  const res = await axios.put(
+    `${BASE_URL}/notifications/${id}/read`,
+    {},
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiMarkAllNotificationsRead() {
+  const res = await axios.put(
+    `${BASE_URL}/notifications/read-all`,
+    {},
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+/* ───────────────── LIVE SESSIONS ───────────────── */
+
+export async function apiGetAllLiveSessions() {
+  const res = await axios.get(`${BASE_URL}/api/live-sessions`);
+  const data = res.data;
+  return Array.isArray(data) ? data : data?.data || [];
+}
+
+export async function apiGetMyLiveSessions() {
+  const res = await axios.get(
+    `${BASE_URL}/api/live-sessions/my`,
+    { headers: authHeaders() }
+  );
+  const data = res.data;
+  return Array.isArray(data) ? data : data?.data || [];
+}
+
+export async function apiGetLiveSessionById(id) {
+  const res = await axios.get(`${BASE_URL}/api/live-sessions/${id}`);
+  return res.data;
+}
+
+export async function apiCreateLiveSession(payload) {
+  const res = await axios.post(
+    `${BASE_URL}/api/live-sessions`,
+    payload,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+
+/* ───────────────── ADMIN ───────────────── */
+
+export async function apiGetAdminDashboard() {
+  const res = await axios.get(
+    `${BASE_URL}/api/admin/dashboard`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiGetAdminUsers() {
+  const res = await axios.get(
+    `${BASE_URL}/api/admin/users`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiUpdateUserRole(id, role) {
+  const res = await axios.put(
+    `${BASE_URL}/api/admin/user/${id}/role`,
+    { role },
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiDeleteUser(id) {
+  const res = await axios.delete(
+    `${BASE_URL}/api/admin/user/${id}`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+/* ───────────────── LESSON (single) ───────────────── */
+
+export async function apiGetLessonById(id) {
+  const res = await axios.get(
+    `${BASE_URL}/api/lessons/${id}`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+
+/* ───────────────── PROJECTS ───────────────── */
+
+export async function apiGetAllProjects(params = {}) {
+  const res = await axios.get(`${BASE_URL}/api/projects`, { params });
+  const data = res.data;
+  return data?.data || data?.projects || data;
+}
+
+export async function apiGetProjectById(id) {
+  const res = await axios.get(`${BASE_URL}/api/projects/${id}`);
+  return res.data;
+}
+
+export async function apiCreateProject(payload) {
+  const res = await axios.post(
+    `${BASE_URL}/api/projects`,
+    payload,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiUpdateProject(id, payload) {
+  const res = await axios.put(
+    `${BASE_URL}/api/projects/${id}`,
+    payload,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiDeleteProject(id) {
+  const res = await axios.delete(
+    `${BASE_URL}/api/projects/${id}`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+

@@ -2,11 +2,16 @@ import React from 'react';
 import styles from './ProfileMetrics.module.css';
 import { TrendingUp, Flame, Target, Award } from 'lucide-react';
 
-const ProfileMetrics = () => {
+const ProfileMetrics = ({ data }) => {
+  const overall = data?.overall_progress ?? 43;
+  const streak = data?.current_streak ?? 7;
+  const xp = data?.total_xp_this_month ?? 4820;
+  const certs = data?.certificates_count ?? 2;
+
   const stats = [
     {
       id: 1,
-      value: '43%',
+      value: `${overall}%`,
       title: 'Overall Progress',
       subText: 'of track complete',
       icon: <TrendingUp size={18} color="#06b6d4" />,
@@ -14,7 +19,7 @@ const ProfileMetrics = () => {
     },
     {
       id: 2,
-      value: '7 days',
+      value: `${streak} days`,
       title: 'Current Streak',
       subText: 'Keep it going!',
       icon: <Flame size={18} color="#f59e0b" />,
@@ -22,7 +27,7 @@ const ProfileMetrics = () => {
     },
     {
       id: 3,
-      value: '4,820',
+      value: xp.toLocaleString(),
       title: 'XP This Month',
       subText: '+38% vs last',
       icon: <Target size={18} color="#0891b2" />,
@@ -30,7 +35,7 @@ const ProfileMetrics = () => {
     },
     {
       id: 4,
-      value: '2',
+      value: certs.toString(),
       title: 'Certificates',
       subText: '1 in progress',
       icon: <Award size={18} color="#a855f7" />,

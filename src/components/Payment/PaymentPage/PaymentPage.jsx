@@ -8,6 +8,7 @@ import Toast from '../Toast/Toast';
 import { useToast } from '../../../hooks/useToast';
 import { useAuth } from '../../../context/AuthContext';
 import { validateCardForm } from '../../../utils/paymob';
+import { apiEnrollInCourse } from '../../../services/api/api';
 import styles from './PaymentPage.module.css';
 
 function Logo() {
@@ -167,6 +168,14 @@ const handlePay = async (formData) => {
 
     if (markPaid) {
       await markPaid();
+    }
+
+    if (pendingCourse?.courseId) {
+      try {
+        await apiEnrollInCourse(pendingCourse.courseId);
+      } catch (enrollErr) {
+        console.warn("Enrollment after payment failed:", enrollErr);
+      }
     }
 
     toast.success('Payment completed successfully!');

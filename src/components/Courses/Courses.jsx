@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import styles from './Courses.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { apiGetAllCourses } from '../../services/api/api';
 
 
 export default function Courses() {
@@ -17,12 +17,9 @@ export default function Courses() {
       try {
         setLoading(true);
 
-        const response = await axios.get(
-          'https://final-project-backend-production-214a.up.railway.app/api/courses'
-        );
-
-        const data = Array.isArray(response.data) ? response.data : [];
-        setCourses(data.filter(c => c.title));
+        const data = await apiGetAllCourses();
+        const list = Array.isArray(data) ? data : data?.courses || [];
+        setCourses(list.filter(c => c.title));
       } catch (err) {
         console.error('Failed to fetch courses:', err);
         setError('Failed to load courses.');
@@ -57,6 +54,7 @@ export default function Courses() {
   if (loading) {
     return (
       <section className={styles.courses} id="courses">
+        <div id="coursesHero" />
         <div className={styles.header}>
           <span className={styles.badgeSmall}>Our Courses</span>
           <h2 className={styles.title}>
@@ -87,6 +85,7 @@ export default function Courses() {
 
   return (
     <section className={styles.courses} id="courses">
+      <div id="coursesHero" />
       <div className={styles.header}>
         <span className={styles.badgeSmall}>Our Courses</span>
         <h2 className={styles.title}>

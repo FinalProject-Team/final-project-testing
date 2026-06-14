@@ -2,7 +2,7 @@ import React from 'react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 import styles from './XPGrowth.module.css';
 
-const data = [
+const defaultData = [
   { name: 'W1', xp: 120 },
   { name: 'W2', xp: 210 },
   { name: 'W3', xp: 160 },
@@ -13,7 +13,11 @@ const data = [
   { name: 'W8', xp: 410 },
 ];
 
-const XPGrowth = () => {
+const XPGrowth = ({ data: apiData }) => {
+  const chartData = apiData && apiData.length > 0
+    ? apiData.map(d => ({ name: d.week, xp: d.xp }))
+    : defaultData;
+
   return (
     <div className={styles.chartContainer}>
       <div className={styles.chartHeader}>
@@ -23,9 +27,8 @@ const XPGrowth = () => {
       
       <div className={styles.chartWrapper}>
         <ResponsiveContainer width="100%" height={260}>
-          <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
-              {/* التدرج اللوني المضيء أسفل المنحنى */}
               <linearGradient id="xpGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.25}/>
                 <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>

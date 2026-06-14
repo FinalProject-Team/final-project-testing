@@ -33,20 +33,16 @@ const JOB_SEEKER_LINKS = [
   { to: '/dashboard/my-jobs',      icon: <FaBriefcase size={16} />,      label: 'My Jobs' },
   { to: '/dashboard/applications', icon: <FaFolderOpen size={16} />,     label: 'Applications' },
   { to: '/dashboard/projects',     icon: <FaFolderOpen size={16} />,     label: 'Projects' },
-  { to: '/dashboard/chatbot',      icon: <FaRobot size={16} />,          label: 'AI Chatbot' },
   { to: '/dashboard/ranking',      icon: <MdLeaderboard size={18} />,    label: 'Ranking' },
-  { to: '/dashboard/community',    icon: <HiOutlineUserGroup size={18} />,label: 'Community' },
   { to: '/dashboard/careertwin',   icon: <FaRobot size={16} />,          label: 'Career Twin' },
   { to: '/dashboard/my-chats',     icon: <MdMessage size={18} />,        label: 'Messages' },
 ];
 
 // normal_user: can browse jobs, apply, view status, and chat if accepted
 const NORMAL_USER_LINKS = [
-  { to: '/dashboard/dashboard',    icon: <MdDashboard size={18} />,      label: 'Dashboard' },
+  { to: '/dashboard/normal-user', icon: <MdDashboard size={18} />,      label: 'Dashboard' },
   { to: '/dashboard/profile',      icon: <FaUser size={16} />,           label: 'Profile' },
   { to: '/dashboard/jobs',         icon: <BsBriefcaseFill size={16} />,  label: 'Browse Jobs' },
-  { to: '/dashboard/community',    icon: <HiOutlineUserGroup size={18} />,label: 'Community' },
-  { to: '/dashboard/chatbot',      icon: <FaRobot size={16} />,          label: 'AI Chatbot' },
   { to: '/dashboard/my-chats',     icon: <MdMessage size={18} />,        label: 'Messages' },
 ];
 

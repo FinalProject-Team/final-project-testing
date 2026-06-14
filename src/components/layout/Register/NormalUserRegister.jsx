@@ -67,7 +67,7 @@ export default function NormalUserRegister() {
         email: formData.email,
         password: formData.password,
         phone: formData.phone,
-        role: 'normal_user',   // ← explicitly set role
+        role: 'job_seeker',
       });
 
       setToastType("success");

@@ -191,6 +191,41 @@ function InstructorDashboardDashboard() {
               ))}
           </div>
         </div>
+
+        <div className={styles.panel}>
+          <h3>Recent Activity</h3>
+
+          <div className={styles.list}>
+            {activityLoading && (
+              <div className={styles.sessionItem}>
+                <div>
+                  <h4>Loading activity...</h4>
+                  <p>Please wait</p>
+                </div>
+              </div>
+            )}
+
+            {!activityLoading && activity.length === 0 && (
+              <div className={styles.sessionItem}>
+                <div>
+                  <h4>No recent activity</h4>
+                  <p>Activity will appear here as students enroll.</p>
+                </div>
+              </div>
+            )}
+
+            {!activityLoading &&
+              activity.map((item, index) => (
+                <div className={styles.sessionItem} key={item.id || index}>
+                  <div>
+                    <h4>{item.title || item.action || item.description || "Activity"}</h4>
+                    <p>{item.details || item.course_title || ""}</p>
+                    <span>{formatDate(item.created_at || item.date)}</span>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
       </div>
     </section>
   );

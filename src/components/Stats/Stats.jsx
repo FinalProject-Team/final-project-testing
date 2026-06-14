@@ -2,9 +2,7 @@
 // ⚠️  FALLS BACK TO STATIC FALLBACK_STATS constant when API is unavailable
 import { useEffect, useRef, useState } from 'react';
 import styles from './Stats.module.css';
-import axios from 'axios';
-
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://final-project-backend-production-214a.up.railway.app') + '/api';
+import { apiGetAllCourses } from '../../services/api/api';
 
 const FALLBACK_STATS = [
   { value: 50000, suffix: '+', label: 'Active Students' },
@@ -48,20 +46,20 @@ export default function Stats() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/courses`);
-        const courses = Array.isArray(response.data) ? response.data : [];
+        const courses = await apiGetAllCourses();
+        const list = Array.isArray(courses) ? courses : courses?.courses || [];
 
-        const totalStudents = courses.reduce((s, c) => s + (Number(c.students_count) || 0), 0);
-        const validRatings = courses.filter((c) => typeof c.rating === 'number' && c.rating > 0);
+        const totalStudents = list.reduce((s, c) => s + (Number(c.students_count) || 0), 0);
+        const validRatings = list.filter((c) => typeof c.rating === 'number' && c.rating > 0);
         const avgRating = validRatings.length > 0
           ? validRatings.reduce((s, c) => s + c.rating, 0) / validRatings.length
           : 4.9;
 
-        const trackCount = new Set(courses.map((c) => c.track).filter(Boolean)).size;
+        const trackCount = new Set(list.map((c) => c.track).filter(Boolean)).size;
 
         setStats([
           { value: totalStudents > 0 ? totalStudents : 50000, suffix: '+', label: 'Active Students' },
-          { value: courses.length > 0 ? courses.length : 120, suffix: courses.length > 0 ? '' : '+', label: 'Expert Courses' },
+          { value: list.length > 0 ? list.length : 120, suffix: list.length > 0 ? '' : '+', label: 'Expert Courses' },
           { value: trackCount > 0 ? trackCount : 8500, suffix: trackCount > 0 ? '' : '+', label: trackCount > 0 ? 'Learning Tracks' : 'Jobs Matched' },
           { value: Math.round(avgRating * 10), suffix: '%', label: 'Success Rate' },
         ]);

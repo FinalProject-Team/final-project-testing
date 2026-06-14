@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../../services/api/api";
+
+const API_BASE_URL = BASE_URL;
 
 export default function MyChats() {
     const [chats, setChats] = useState([]);
@@ -10,7 +13,7 @@ export default function MyChats() {
             const token = localStorage.getItem("token");
 
             const res = await fetch(
-                "https://final-project-backend-production-214a.up.railway.app/chats",
+                `${API_BASE_URL}/chats`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

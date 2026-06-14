@@ -5,36 +5,76 @@ import ChatMessage from '../../components/Aichat/ChatMessage/ChatMessage';
 import SuggestionChips from '../../components/Aichat/ChatBot/SuggestionChips/SuggestionChips';
 import ChatInput from '../../components/Aichat/ChatBot/ChatInput/ChatInput';
 import { sendMessage, saveMessage, loadHistory, clearHistory } from '../../services/chat/chatService';
+import { useAuth } from '../../context/AuthContext';
+import { apiGetMe } from '../../services/api/api';
 import s from './Chatbot.module.css';
 
-
-const WELCOME = {
-  id: 'welcome',
-  role: 'assistant',
-  content: "Hi Alex! I'm your AI Career Advisor. I can help you plan your learning journey, prepare for interviews, analyze job opportunities, and guide your career growth. What would you like to explore today?",
-  time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-};
+function buildWelcome(name) {
+  return {
+    id:      'welcome',
+    role:    'assistant',
+    content: `Hi ${name}! I'm your AI Career Advisor. I can help you plan your learning journey, prepare for interviews, analyze job opportunities, and guide your career growth. What would you like to explore today?`,
+    time:    new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  };
+}
 
 export default function Chatbot() {
-  const [messages, setMessages]   = useState([WELCOME]);
-  const [input, setInput]         = useState('');
-  const [loading, setLoading]     = useState(false);
-  const [error, setError]         = useState(null);
+  const { user, isAuthenticated } = useAuth();
+
+  // Resolve real first name from API then auth context then fallback
+  const [userName, setUserName]         = useState('');
+  const [messages, setMessages]         = useState([]);
+  const [input, setInput]               = useState('');
+  const [loading, setLoading]           = useState(false);
+  const [error, setError]               = useState(null);
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const bottomRef = useRef(null);
 
-  // Load Supabase history on mount
+  // ── Fetch real user name then load history ────────────────────────────────
   useEffect(() => {
-    (async () => {
-      const history = await loadHistory();
-      if (history.length > 0) {
-        setMessages([WELCOME, ...history.map((m, i) => ({ id: `h${i}`, ...m }))]);
-      }
-      setHistoryLoaded(true);
-    })();
-  }, []);
+    let cancelled = false;
 
-  // Auto-scroll
+    async function init() {
+      // Try to get real name from backend
+      let resolvedName = '';
+      try {
+        if (isAuthenticated) {
+          const me = await apiGetMe();
+          resolvedName =
+            me?.user?.full_name || me?.profile?.full_name || me?.full_name ||
+            user?.user_metadata?.full_name ||
+            user?.email?.split('@')[0] || '';
+        }
+      } catch (_) {
+        resolvedName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || '';
+      }
+
+      // Capitalise first word
+      const firstName = (resolvedName.split(' ')[0] || 'there');
+      const display   = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+
+      if (!cancelled) {
+        setUserName(display);
+
+        // Load per-user chat history from Supabase
+        const history = await loadHistory();
+        if (!cancelled) {
+          const welcome = buildWelcome(display);
+          if (history.length > 0) {
+            setMessages([welcome, ...history.map((m, i) => ({ id: `h${i}`, ...m }))]);
+          } else {
+            setMessages([welcome]);
+          }
+          setHistoryLoaded(true);
+        }
+      }
+    }
+
+    init();
+    return () => { cancelled = true; };
+  }, [isAuthenticated]);
+
+  // Auto-scroll to bottom
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
@@ -54,7 +94,7 @@ export default function Chatbot() {
     setInput('');
     setLoading(true);
 
-    // Save user message to Supabase
+    // Persist user message (scoped to current user)
     await saveMessage({ role: 'user', content: text.trim() });
 
     try {
@@ -74,7 +114,7 @@ export default function Chatbot() {
 
       setMessages(prev => [...prev, aiMsg]);
 
-      // Save AI reply to Supabase
+      // Persist AI reply (scoped to current user)
       await saveMessage({ role: 'assistant', content: reply });
 
     } catch (err) {
@@ -86,18 +126,16 @@ export default function Chatbot() {
 
   const handleClear = useCallback(async () => {
     await clearHistory();
-    setMessages([WELCOME]);
+    setMessages([buildWelcome(userName || 'there')]);
     setError(null);
-  }, []);
+  }, [userName]);
 
   return (
     <div className={s.page}>
       <GridBackground />
       <div className={s.inner}>
-        {/* Header — pass onClear so the refresh button works */}
         <ChatHeader onClear={handleClear} />
 
-        {/* Error banner */}
         {error && (
           <div className={s.errorBanner}>
             ⚠️ {error}
@@ -105,10 +143,9 @@ export default function Chatbot() {
           </div>
         )}
 
-        {/* Messages */}
         <div className={s.messagesArea}>
           {!historyLoaded && (
-            <div className={s.loadingHistory}>Loading history…</div>
+            <div className={s.loadingHistory}>Loading your conversation history…</div>
           )}
 
           {messages.map(msg =>
@@ -121,7 +158,6 @@ export default function Chatbot() {
           <div ref={bottomRef} />
         </div>
 
-        {/* Bottom */}
         <div className={s.bottomArea}>
           <SuggestionChips onSelect={handleSend} />
           <ChatInput value={input} onChange={setInput} onSend={handleSend} disabled={loading} />
@@ -131,7 +167,6 @@ export default function Chatbot() {
   );
 }
 
-/* ── User bubble ── */
 function UserMessage({ text, time }) {
   return (
     <div className={s.userRow}>
@@ -141,7 +176,6 @@ function UserMessage({ text, time }) {
   );
 }
 
-/* ── Typing indicator ── */
 function TypingIndicator() {
   return (
     <div style={{ display:'flex', alignItems:'center', gap:'12px', maxWidth:'600px', width:'100%', margin:'0 auto 8px', animation:'fadeIn 0.3s ease both' }}>

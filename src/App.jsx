@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/global.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 
 /* Pages */
 import Home from "./pages/Home";
@@ -38,6 +39,7 @@ import InstructorDashboardProfile from "./components/InstructorDashboard/Instruc
 
 /* Auth */
 import ProtectedRoute from "./components/common/ProtectedRoute";
+import { ProfileProvider } from "./context/ProfileContext";
 
 /* Services */
 import { supabase } from "./components/layout/services/supabaseClient";
@@ -57,7 +59,9 @@ import CourseCompletion from "./components/Progress/CourseCompletion.jsx";
 import ProgressperCourse from "./components/Progress/ProgressperCourse";
 import DailyLearningHours from "./components/Progress/DailyLearningHours";
 import JobsPage from "./pages/Jobs/JobsPage.jsx";
+import PublicJobsPage from "./pages/Jobs/PublicJobsPage.jsx";
 import Projects from "./pages/Projects/Projects.jsx";
+import NormalUserDashboard from "./pages/Dashboard/NormalUserDashboard";
 
 /* Jobs & Chat */
 import MyJobsPage from "./pages/Jobs/MyJobsPage.jsx";
@@ -68,7 +72,8 @@ import MyChats from "./pages/Chat/MyChats.jsx";
 /* ---------------- PROFILE ---------------- */
 
 const Profile = () => (
-  <div style={{ background: "#0B0F19", minHeight: "100vh", width: "100%", padding: "40px 0", color: "white" }}>
+ <ProfileProvider>
+    <div style={{ background: "#0B0F19", minHeight: "100vh", width: "100%", padding: "40px 0", color: "white" }}>
     <div className="container d-flex flex-column justify-content-between" style={{ minHeight: "calc(100vh - 80px)" }}>
       <div className="d-flex flex-column gap-4 mb-4">
         <ProfileHeader />
@@ -87,6 +92,7 @@ const Profile = () => (
       </div>
     </div>
   </div>
+  </ProfileProvider>
 );
 
 /* ---------------- PROGRESS ---------------- */
@@ -138,9 +144,19 @@ export default function App() {
     getSessionAndSendToBackend();
   }, []);
 
+  const { role } = useAuth();
+
+  const DashboardRoute = () => {
+    if (role === 'job_seeker') {
+      return <Navigate to="/dashboard/normal-user" replace />;
+    }
+    return <Dashboard />;
+  };
+
   const Router = createBrowserRouter([
     { path: "/", element: <Home /> },
     { path: "/login", element: <Login /> },
+    { path: "/jobs", element: <PublicJobsPage /> },
     { path: "/register", element: <Register /> },
     { path: "/register-job", element: <RegisterJob /> },
     // NEW: registration page for normal_user role
@@ -185,11 +201,23 @@ export default function App() {
         </ProtectedRoute>
       ),
       children: [
-        { path: "dashboard", element: <Dashboard /> },
+      { path: "dashboard", element: <DashboardRoute /> },
+        // Normal user dashboard (separate from student dashboard)
+        { path: "normal-user", element: (
+            <ProtectedRoute allowedRoles={["normal_user", "job_seeker"]}>
+              <NormalUserDashboard />
+            </ProtectedRoute>
+          )
+        },
         { path: "profile", element: <Profile /> },
         { path: "roadmap", element: <RoadmapPage /> },
         { path: "projects", element: <Projects /> },
-        { path: "chatbot", element: <Chatbot /> },
+        { path: "chatbot", element: (
+            <ProtectedRoute allowedRoles={["student"]}>
+              <Chatbot />
+            </ProtectedRoute>
+          )
+        },
         { path: "jobs", element: <JobsPage /> },
         { path: "my-jobs", element: <MyJobsPage /> },
         { path: "applications", element: <Applications /> },
@@ -197,7 +225,12 @@ export default function App() {
         { path: "softSkills", element: <SoftSkills /> },
         { path: "ranking", element: <Ranking /> },
         { path: "careertwin", element: <Career /> },
-        { path: "community", element: <CommunityPage /> },
+        { path: "community", element: (
+            <ProtectedRoute allowedRoles={["student"]}>
+              <CommunityPage />
+            </ProtectedRoute>
+          )
+        },
         { path: "live-session", element: <LiveSession /> },
         { path: "chat/:chatId", element: <ChatPage /> },
         { path: "my-chats", element: <MyChats /> },

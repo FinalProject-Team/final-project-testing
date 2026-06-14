@@ -12,6 +12,7 @@ const schema = yup.object().shape({
   phone: yup.string().required().matches(/^01[0125][0-9]{8}$/),
   password: yup.string().required().min(6),
   confirmPassword: yup.string().oneOf([yup.ref('password'), null], "Passwords do not match"),
+  role: yup.string().required("Please select a role"),
 });
 
 export default function Register() {
@@ -24,6 +25,7 @@ export default function Register() {
     phone: "",
     password: "",
     confirmPassword: "",
+    role: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -77,6 +79,7 @@ export default function Register() {
         email: formData.email,
         password: formData.password,
         phone: formData.phone,
+        role: formData.role,
       });
 
       setToastType("success");
@@ -132,46 +135,92 @@ export default function Register() {
 
           <div className={styles.inputGroup}>
             <FaUser className={styles.iconLeft} />
-            <input name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} />
+            <input
+              type="text"
+              className={styles.input}
+              name="fullName"
+              placeholder="Full Name"
+              value={formData.fullName}
+              onChange={handleChange}
+            />
           </div>
+          {errors.fullName && <span className={styles.errorText}>{errors.fullName}</span>}
 
           <div className={styles.inputGroup}>
             <FaEnvelope className={styles.iconLeft} />
-            <input name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
+            <input
+              type="email"
+              className={styles.input}
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+            />
           </div>
+          {errors.email && <span className={styles.errorText}>{errors.email}</span>}
 
           <div className={styles.inputGroup}>
             <FaPhoneAlt className={styles.iconLeft} />
-            <input name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} />
+            <input
+              type="tel"
+              className={styles.input}
+              name="phone"
+              placeholder="Phone"
+              value={formData.phone}
+              onChange={handleChange}
+            />
           </div>
+          {errors.phone && <span className={styles.errorText}>{errors.phone}</span>}
+
+          <div className={styles.inputGroup}>
+            <FaUser className={styles.iconLeft} />
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className={styles.input}
+            >
+              <option value="" disabled>
+                Select role
+              </option>
+              <option value="student">Student</option>
+              <option value="job_seeker">Job Seeker</option>
+              <option value="employer">Employer</option>
+            </select>
+          </div>
+          {errors.role && <span className={styles.errorText}>{errors.role}</span>}
 
           <div className={styles.inputGroup}>
             <FaLock className={styles.iconLeft} />
             <input
               type={showPassword ? "text" : "password"}
+              className={`${styles.input} ${styles.inputPassword}`}
               name="password"
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
             />
-            <span onClick={() => setShowPassword(!showPassword)}>
+            <span className={styles.iconRight} onClick={() => setShowPassword(!showPassword)}>
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
+          {errors.password && <span className={styles.errorText}>{errors.password}</span>}
 
           <div className={styles.inputGroup}>
             <FaLock className={styles.iconLeft} />
             <input
               type={showConfirmPassword ? "text" : "password"}
+              className={`${styles.input} ${styles.inputPassword}`}
               name="confirmPassword"
               placeholder="Confirm Password"
               value={formData.confirmPassword}
               onChange={handleChange}
             />
-            <span onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+            <span className={styles.iconRight} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
+          {errors.confirmPassword && <span className={styles.errorText}>{errors.confirmPassword}</span>}
 
           <button type="submit" className={styles.btn}>
             <FaUserPlus /> Sign Up

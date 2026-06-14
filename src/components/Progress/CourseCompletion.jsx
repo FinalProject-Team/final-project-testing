@@ -2,13 +2,19 @@ import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import styles from './CourseCompletion.module.css';
 
-const data = [
+const defaultData = [
   { name: 'Completed', value: 12, color: '#0ea5e9' },
   { name: 'In Progress', value: 6, color: '#a855f7' },
   { name: 'Not Started', value: 10, color: '#334155' },
 ];
 
-const CourseCompletion = () => {
+const CourseCompletion = ({ data: apiData }) => {
+  const chartData = apiData ? [
+    { name: 'Completed', value: apiData.completed ?? 0, color: '#0ea5e9' },
+    { name: 'In Progress', value: apiData.in_progress ?? 0, color: '#a855f7' },
+    { name: 'Not Started', value: apiData.not_started ?? 0, color: '#334155' },
+  ] : defaultData;
+
   return (
     <div className={styles.chartContainer}>
       <h2 className={styles.chartTitle}>Course Completion</h2>
@@ -29,7 +35,7 @@ const CourseCompletion = () => {
                 itemStyle={{ color: '#fff' }}
               />
               <Pie
-                data={data}
+                data={chartData}
                 cx="50%"
                 cy="50%"
                 innerRadius={50}
@@ -37,7 +43,7 @@ const CourseCompletion = () => {
                 paddingAngle={4}
                 dataKey="value"
               >
-                {data.map((entry, index) => (
+                {chartData.map((entry, index) => (
                   <Cell 
                     key={`cell-${index}`} 
                     fill={entry.color}
@@ -52,7 +58,7 @@ const CourseCompletion = () => {
 
         
         <div className={styles.legendContainer}>
-          {data.map((item, index) => (
+          {chartData.map((item, index) => (
             <div key={index} className={styles.legendItem}>
               <div className={styles.legendLeft}>
                 <span className={styles.dot} style={{ backgroundColor: item.color }}></span>

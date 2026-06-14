@@ -1,7 +1,7 @@
 import axios from "axios";
+import { BASE_URL } from './api';
 
-const API_BASE_URL =
-  "https://final-project-backend-production-214a.up.railway.app";
+const API_BASE_URL = BASE_URL;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
@@ -43,6 +43,15 @@ export const getInstructorCoursesSummary = async () => {
 export const getLiveSessions = async () => {
   const response = await axios.get(
     `${API_BASE_URL}/api/live-sessions`,
+    getAuthHeaders()
+  );
+
+  return response.data;
+};
+
+export const getInstructorLiveSessions = async () => {
+  const response = await axios.get(
+    `${API_BASE_URL}/api/live-sessions/instructor`,
     getAuthHeaders()
   );
 
@@ -136,6 +145,37 @@ export const updateLesson = async (id, lessonData) => {
 export const deleteLesson = async (id) => {
   const response = await axios.delete(
     `${API_BASE_URL}/api/lessons/${id}`,
+    getAuthHeaders()
+  );
+
+  return response.data;
+};
+
+// ================= LIVE SESSIONS =================
+
+export const createLiveSession = async (sessionData) => {
+  const response = await axios.post(
+    `${API_BASE_URL}/api/live-sessions`,
+    sessionData,
+    getAuthHeaders()
+  );
+
+  return response.data;
+};
+
+export const deleteLiveSession = async (id) => {
+  const response = await axios.delete(
+    `${API_BASE_URL}/api/live-sessions/${id}`,
+    getAuthHeaders()
+  );
+
+  return response.data;
+};
+
+export const updateLiveSession = async (id, sessionData) => {
+  const response = await axios.put(
+    `${API_BASE_URL}/api/live-sessions/${id}`,
+    sessionData,
     getAuthHeaders()
   );
 

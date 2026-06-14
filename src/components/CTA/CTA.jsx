@@ -1,9 +1,12 @@
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import styles from './CTA.module.css';
 
 export default function CTA() {
+  const navigate = useNavigate();
+
   return (
-    <section className={styles.cta}>
+    <section id="coursesCTA" className={styles.cta}>
       <div className={styles.ctaContainer}>
         <div className={styles.badge}>Limited Spots Available</div>
 
@@ -18,12 +21,10 @@ export default function CTA() {
         </p>
 
         <div className={styles.buttons}>
-          <button className={styles.primaryBtn}>
-            <span>✦</span> Get Started Free <ArrowRight size={18} />
+          <button type="button" className={styles.primaryBtn} onClick={() => navigate('/register')}>
+            <span>✦</span> Get Started  <ArrowRight size={18} />
           </button>
-          <button className={styles.secondaryBtn}>
-            Take Free Assessment
-          </button>
+          
         </div>
       </div>
     </section>

@@ -13,12 +13,21 @@ export function AuthProvider({ children }) {
   const [roleLoading, setRoleLoading] = useState(false);
   const mounted = useRef(true);
 
+  const normalizeBackendUser = (data) => {
+    if (!data) return {};
+    return data?.user || data?.profile || data;
+  };
+
   const fetchRole = async () => {
     setRoleLoading(true);
     try {
       const res = await apiGetMe();
-      const newRole = res?.profile?.role || res?.user?.role || null;
-      const paid = res?.user?.hasPaid ?? res?.profile?.hasPaid ?? false;
+      const backendUser = normalizeBackendUser(res);
+      const newRole =
+        backendUser?.profile?.role ||
+        backendUser?.role ||
+        null;
+      const paid = backendUser?.hasPaid ?? backendUser?.profile?.hasPaid ?? false;
       if (mounted.current) {
         setRole(newRole);
         setHasPaid(Boolean(paid));
@@ -66,8 +75,12 @@ export function AuthProvider({ children }) {
         if (signedUser?.identities?.some((identity) => identity.provider === 'google')) {
           try {
             const backendRes = await apiGoogleLogin(signedUser);
-            const newRole = backendRes?.user?.role || null;
-            const paid = backendRes?.user?.hasPaid ?? false;
+            const backendUser = normalizeBackendUser(backendRes);
+            const newRole =
+              backendUser?.profile?.role ||
+              backendUser?.role ||
+              null;
+            const paid = backendUser?.hasPaid ?? backendUser?.profile?.hasPaid ?? false;
             if (mounted.current) {
               setRole(newRole);
               setHasPaid(Boolean(paid));
@@ -102,9 +115,14 @@ export function AuthProvider({ children }) {
     if (token) localStorage.setItem('token', token);
 
     const res = await apiLogin(email, password);
-    const backendUser = res?.data?.user || res?.user || {};
-    const newRole = backendUser?.role || null;
-    const paid = backendUser?.hasPaid ?? false;
+    const backendUser = normalizeBackendUser(res);
+    const newRole =
+      backendUser?.profile?.role ||
+      backendUser?.role ||
+      null;
+    const paid = backendUser?.hasPaid ?? backendUser?.profile?.hasPaid ?? false;
+
+    console.log('[AuthContext] Login successful - Role:', newRole, 'User:', backendUser);
 
     if (mounted.current) {
       setUser({ ...data.user, role: newRole, hasPaid: paid });
@@ -112,7 +130,8 @@ export function AuthProvider({ children }) {
       setRole(newRole);
       setHasPaid(Boolean(paid));
     }
-
+console.log('Login Response:', res);
+console.log('Backend User:', backendUser);
     return { ...data, backendRole: newRole };
   };
 
@@ -148,18 +167,21 @@ export function AuthProvider({ children }) {
     if (!user) return '/';
     if (role === 'admin') return '/admin';
     if (role === 'instructor') return '/instructor/dashboard';
-    // student, job_seeker, and normal_user all go to /dashboard
-    return '/dashboard/dashboard';
+    // route normal_user to their own dashboard; students keep the main dashboard
+    if (role === 'job_seeker') return '/dashboard/normal-user';
+    if (role === 'student') return '/dashboard/dashboard';
+      return '/dashboard/normal-user';
+
   };
 
-  // Helper to check if user can apply for jobs (student or normal_user)
-  const canApplyForJobs = role === 'student' || role === 'normal_user';
+  // Helper to check if user can apply for jobs
+  const canApplyForJobs = role === 'student' || role === 'normal_user' || role === 'job_seeker';
 
-  // Helper to check if user can post/manage jobs (job_seeker only)
-  const canPostJobs = role === 'job_seeker';
+  // Helper to check if user can post/manage jobs
+  const canPostJobs = role === 'job_seeker' || role === 'normal_user';
 
-  // Helper: is job seeker (for backwards compat)
-  const isJobSeeker = role === 'job_seeker';
+  // Helper: is job seeker or an equivalent normal user
+  const isJobSeeker = role === 'job_seeker' || role === 'normal_user';
 
   const value = {
     user,

@@ -1,6 +1,4 @@
-const BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://final-project-backend-production-214a.up.railway.app";
+import { BASE_URL } from './api';
 
 export const getApplications = async (token) => {
   const res = await fetch(`${BASE_URL}/applications`, {

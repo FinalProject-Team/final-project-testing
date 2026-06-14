@@ -12,6 +12,11 @@ export function ThemeProvider({ children }) {
     return 'dark';
   });
 
+  // Ensure `data-theme` is set as early as possible to avoid a flash
+  if (typeof document !== 'undefined') {
+    try { document.documentElement.setAttribute('data-theme', theme); } catch (e) { /* ignore */ }
+  }
+
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("ct-theme", theme);

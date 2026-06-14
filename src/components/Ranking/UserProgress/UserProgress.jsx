@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { FaBolt } from "react-icons/fa";
 import styles from "./UserProgress.module.css";
 
 function UserProgress({ currentUser }) {
+  const navigate = useNavigate();
   const targetRankXP = 11200;
   const remainingXP = targetRankXP - currentUser.totalXP;
   const progressPercent = Math.min(
@@ -32,7 +34,11 @@ function UserProgress({ currentUser }) {
         </div>
       </div>
 
-      <button className={styles.button}>
+      <button
+        className={styles.button}
+        type="button"
+        onClick={() => navigate('/dashboard/dashboard')}
+      >
         Keep Learning
       </button>
     </section>

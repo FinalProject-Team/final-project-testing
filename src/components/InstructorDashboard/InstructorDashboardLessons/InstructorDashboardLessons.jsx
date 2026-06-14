@@ -10,14 +10,12 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import styles from "./InstructorDashboardLessons.module.css";
-import { getCourseLessons } from "../../../services/api/instructorService";
+import { BASE_URL } from "../../../services/api/api";
 
-const API_BASE_URL =
-  "https://final-project-backend-production-214a.up.railway.app";
+const API_BASE_URL = BASE_URL;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
-
   return {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -33,6 +31,8 @@ function InstructorDashboardLessons() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [editingLesson, setEditingLesson] = useState(null);
+
   const [formData, setFormData] = useState({
     courseId: "",
     title: "",
@@ -45,7 +45,6 @@ function InstructorDashboardLessons() {
     try {
       setLoading(true);
 
-      // 1. get courses
       const coursesRes = await axios.get(
         `${API_BASE_URL}/api/instructor/courses`,
         getAuthHeaders()
@@ -54,26 +53,24 @@ function InstructorDashboardLessons() {
       const coursesData = coursesRes.data || [];
       const fullData = await Promise.all(
         coursesData.map(async (course) => {
-
-          console.log("COURSE OBJECT:", course);
-          console.log("COURSE ID:", course.id);
-          console.log("ALL KEYS:", Object.keys(course));
-
-          const lessonsRes = await axios.get(
-            `${API_BASE_URL}/api/lessons/instructor/course/${course.id}`,
-            getAuthHeaders()
-          );
-
-          return {
-            ...course,
-            lessons: lessonsRes.data || [],
-          };
+          try {
+            const lessonsRes = await axios.get(
+              `${API_BASE_URL}/api/lessons/instructor/course/${course.id}`,
+              getAuthHeaders()
+            );
+            return {
+              ...course,
+              lessons: lessonsRes.data || [],
+            };
+          } catch {
+            return { ...course, lessons: [] };
+          }
         })
       );
 
       setCourses(fullData);
     } catch (err) {
-      console.error(err);
+      console.error("Failed to fetch courses with lessons:", err);
     } finally {
       setLoading(false);
     }
@@ -82,18 +79,6 @@ function InstructorDashboardLessons() {
   useEffect(() => {
     fetchCoursesWithLessons();
   }, []);
-  useEffect(() => {
-    const testAPI = async () => {
-      if (!courses.length) return;
-
-      const firstCourseId = courses[0].id;
-
-      const data = await getCourseLessons(firstCourseId);
-      console.log("LESSONS DATA:", data);
-    };
-
-    testAPI();
-  }, [courses]);
 
   // ================= SEARCH =================
   const filteredCourses = useMemo(() => {
@@ -121,11 +106,12 @@ function InstructorDashboardLessons() {
   // ================= FORM =================
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const resetForm = () => {
+    setFormData({ courseId: "", title: "", video_url: "", lesson_order: "" });
+    setEditingLesson(null);
   };
 
   // ================= ADD LESSON =================
@@ -145,18 +131,51 @@ function InstructorDashboardLessons() {
       );
 
       setIsModalOpen(false);
-
-      setFormData({
-        courseId: "",
-        title: "",
-        video_url: "",
-        lesson_order: "",
-      });
-
+      resetForm();
       await fetchCoursesWithLessons();
     } catch (err) {
       console.error(err);
       alert("Failed to add lesson");
+    }
+  };
+
+  // ================= EDIT LESSON =================
+  const handleEditLesson = async (e) => {
+    e.preventDefault();
+
+    try {
+      await axios.put(
+        `${API_BASE_URL}/api/lessons/${editingLesson.id}`,
+        {
+          title: formData.title || editingLesson.title,
+          video_url: formData.video_url || editingLesson.video_url,
+          lesson_order: formData.lesson_order
+            ? Number(formData.lesson_order)
+            : editingLesson.lesson_order,
+        },
+        getAuthHeaders()
+      );
+
+      setIsModalOpen(false);
+      resetForm();
+      await fetchCoursesWithLessons();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update lesson");
+    }
+  };
+
+  // ================= DELETE LESSON =================
+  const handleDeleteLesson = async (lessonId) => {
+    try {
+      await axios.delete(
+        `${API_BASE_URL}/api/lessons/${lessonId}`,
+        getAuthHeaders()
+      );
+      await fetchCoursesWithLessons();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete lesson");
     }
   };
 
@@ -171,7 +190,10 @@ function InstructorDashboardLessons() {
 
         <button
           className={styles.addBtn}
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            resetForm();
+            setIsModalOpen(true);
+          }}
         >
           <Plus size={18} />
           Add Lesson
@@ -223,10 +245,21 @@ function InstructorDashboardLessons() {
                     </div>
 
                     <div className={styles.actions}>
-                      <button>
+                      <button
+                        onClick={() => {
+                          setEditingLesson(lesson);
+                          setFormData({
+                            courseId: course.id,
+                            title: lesson.title || "",
+                            video_url: lesson.video_url || "",
+                            lesson_order: lesson.lesson_order || "",
+                          });
+                          setIsModalOpen(true);
+                        }}
+                      >
                         <Edit size={17} />
                       </button>
-                      <button>
+                      <button onClick={() => handleDeleteLesson(lesson.id)}>
                         <Trash2 size={17} />
                       </button>
                     </div>
@@ -244,20 +277,27 @@ function InstructorDashboardLessons() {
           <div className={styles.modal}>
             <button
               className={styles.closeBtn}
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => {
+                setIsModalOpen(false);
+                resetForm();
+              }}
             >
               <X size={22} />
             </button>
 
-            <h2>Add New Lesson</h2>
+            <h2>{editingLesson ? "Edit Lesson" : "Add New Lesson"}</h2>
 
-            <form onSubmit={handleAddLesson} className={styles.form}>
+            <form
+              onSubmit={editingLesson ? handleEditLesson : handleAddLesson}
+              className={styles.form}
+            >
               <label>Course</label>
               <select
                 name="courseId"
                 value={formData.courseId}
                 onChange={handleChange}
-                required
+                required={!editingLesson}
+                disabled={!!editingLesson}
               >
                 <option value="">Select course</option>
                 {courses.map((c) => (
@@ -272,7 +312,7 @@ function InstructorDashboardLessons() {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                required
+                required={!editingLesson}
               />
 
               <label>Video URL</label>
@@ -280,7 +320,7 @@ function InstructorDashboardLessons() {
                 name="video_url"
                 value={formData.video_url}
                 onChange={handleChange}
-                required
+                required={!editingLesson}
               />
 
               <label>Order</label>
@@ -289,15 +329,23 @@ function InstructorDashboardLessons() {
                 type="number"
                 value={formData.lesson_order}
                 onChange={handleChange}
-                required
+                required={!editingLesson}
               />
 
               <div className={styles.modalActions}>
-                <button type="button" onClick={() => setIsModalOpen(false)}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    resetForm();
+                  }}
+                >
                   Cancel
                 </button>
 
-                <button type="submit">Add Lesson</button>
+                <button type="submit">
+                  {editingLesson ? "Update Lesson" : "Add Lesson"}
+                </button>
               </div>
             </form>
           </div>

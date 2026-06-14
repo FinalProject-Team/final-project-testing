@@ -104,7 +104,7 @@
 
 .primaryBtn {
   background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-  color: #fff;
+  color: var(--text-primary);
   box-shadow: var(--shadow-btn);
 }
 
