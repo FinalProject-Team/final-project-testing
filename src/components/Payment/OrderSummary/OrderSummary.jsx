@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import PaymentButton from '../../payment/PaymentButton/PaymentButton';
+import PaymentButton from '../../Payment/PaymentButton/PaymentButton';
 import styles from './OrderSummary.module.css';
 
 const VALID_CODES = { CAREER50: 50, START20: 20 };
