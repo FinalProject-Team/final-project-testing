@@ -1,4 +1,4 @@
-import api from "./api";
+import api from "../services/Api";
 import { supabase } from "../../../lib/supabaseClient"; 
 
 export async function registerUser(userData) {
