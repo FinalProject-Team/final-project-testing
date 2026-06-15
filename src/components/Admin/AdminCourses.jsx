@@ -3,7 +3,12 @@ import { Edit2, Trash2, Plus, X } from 'lucide-react';
 import { useOutletContext } from 'react-router-dom'; // 👈 1. استدعينا الـ Context هنا لقراءة التوب بار
 import styles from './AdminCourses.module.css';
 
-import { supabase } from '../../components/layout/services/supabaseClient'; 
+import {
+  apiGetAllCourses,
+  apiCreateCourse,
+  apiUpdateCourse,
+  apiDeleteCourse,
+} from '../../services/api/api';
 
 export default function AdminCourses() {
   const [courses, setCourses] = useState([]);
@@ -27,17 +32,20 @@ export default function AdminCourses() {
     instructor: '' 
   });
 
-  // 🔄 جلب الكورسات مباشرة من داتابيز سوبابيز
+  // 🔄 Fetch courses from the backend Courses API
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('courses')
-        .select('*')
-        .order('id', { ascending: false });
-
-      if (error) throw error;
-      if (data) setCourses(data);
+      const data = await apiGetAllCourses();
+      const list = Array.isArray(data) ? data : (data?.courses || data?.data || []);
+      // Show most recently created courses first when a created_at field exists
+      const sorted = [...list].sort((a, b) => {
+        if (a.created_at && b.created_at) {
+          return new Date(b.created_at) - new Date(a.created_at);
+        }
+        return 0;
+      });
+      setCourses(sorted);
     } catch (error) {
       console.error('Error fetching courses:', error.message);
     } finally {
@@ -49,7 +57,7 @@ export default function AdminCourses() {
     fetchCourses();
   }, []);
 
-  // 💾 حفظ الكورس مباشرة في الداتابيز
+  // 💾 Save the course via the backend Courses API
   const handleSave = async (e) => {
     if (e) e.preventDefault();
     try {
@@ -57,37 +65,31 @@ export default function AdminCourses() {
         title: formData.title,
         price: Number(formData.price),
         description: formData.description || '',
-        instructor: formData.instructor || 'System Admin' 
+        instructor: formData.instructor || 'System Admin'
       };
 
       if (isEditing) {
-        const { error } = await supabase
-          .from('courses')
-          .update(payload)
-          .eq('id', currentCourseId);
+        await apiUpdateCourse(currentCourseId, payload);
 
-        if (error) throw error;
-
-        setCourses(prevCourses => 
+        setCourses(prevCourses =>
           prevCourses.map(c => c.id === currentCourseId ? { ...c, ...payload } : c)
         );
       } else {
-        const { data, error } = await supabase
-          .from('courses')
-          .insert([payload])
-          .select();
+        const created = await apiCreateCourse(payload);
+        const newCourse = created?.course || created?.data || created;
 
-        if (error) throw error;
-
-        if (data && data[0]) {
-          setCourses(prevCourses => [data[0], ...prevCourses]);
+        if (newCourse) {
+          setCourses(prevCourses => [newCourse, ...prevCourses]);
+        } else {
+          // Fallback: re-fetch the list if the API didn't return the created course
+          await fetchCourses();
         }
       }
-      
+
       closeModal();
     } catch (error) {
       console.error('Error saving course:', error.message);
-      alert('⚠️ حصل مشكلة أثناء الحفظ في Supabase: ' + error.message);
+      alert('⚠️ Failed to save the course: ' + (error?.response?.data?.message || error.message));
     }
   };
 
@@ -95,21 +97,7 @@ export default function AdminCourses() {
   const confirmDelete = async () => {
     if (!courseToDelete) return;
     try {
-      const { data, error } = await supabase
-        .from('courses')
-        .delete()
-        .eq('id', courseToDelete.id)
-        .select(); 
-
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        console.log("Supabase returned empty array. Rows deleted: 0");
-        alert("⚠️ سوبابيز رفض الحذف الفعلي! غالباً بسبب حماية الـ RLS جوة داشبورد Supabase لجدول courses.");
-        return; 
-      }
-
-      console.log("Successfully deleted from Supabase:", data);
+      await apiDeleteCourse(courseToDelete.id);
 
       setCourses(courses.filter(course => course.id !== courseToDelete.id));
       closeDeleteModal();

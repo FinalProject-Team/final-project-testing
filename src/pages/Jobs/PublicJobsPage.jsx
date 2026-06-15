@@ -6,6 +6,7 @@ import Topbar from '../../components/layout/Topbar/Topbar';
 import StatsCards from '../../components/Jobs/StatsCards/StatsCards';
 import JobCard from '../../components/Jobs/JobCard/JobCard';
 import JobDetails from '../../components/Jobs/JobDetails/JobDetails';
+import JobPostModal from './JobPostModal.jsx';
 
 export default function PublicJobsPage() {
   const [jobs, setJobs] = useState([]);
@@ -19,7 +20,8 @@ export default function PublicJobsPage() {
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [filters, setFilters] = useState({ job_type: '', location: '' });
 
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, canPostJobs } = useAuth();
+  const [showPostModal, setShowPostModal] = useState(false);
   const mounted = useRef(true);
 
   useEffect(() => {
@@ -79,6 +81,18 @@ export default function PublicJobsPage() {
           metaLabel={`${jobs.length} jobs available`}
         />
         <StatsCards />
+
+        {canPostJobs && (
+          <div className={styles.headerActions}>
+            <button
+              className={styles.postBtn}
+              type="button"
+              onClick={() => setShowPostModal(true)}
+            >
+              Post Job
+            </button>
+          </div>
+        )}
 
       <div className={styles.body}>
         <div className={styles.left}>
@@ -154,6 +168,11 @@ export default function PublicJobsPage() {
           <JobDetails job={selectedJob} />
         </div>
       </div>
+
+      <JobPostModal
+        show={showPostModal}
+        onClose={() => setShowPostModal(false)}
+      />
 
       </div>
 

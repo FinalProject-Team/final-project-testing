@@ -3,7 +3,13 @@ import { Edit2, Trash2, Plus, X } from 'lucide-react';
 import { useOutletContext } from 'react-router-dom'; // 👈 1. استدعينا الـ Context هنا
 import styles from './AdminLessons.module.css';
 
-import { supabase } from '../../components/layout/services/supabaseClient'; 
+import {
+  apiGetAllCourses,
+  apiGetLessonsForCourse,
+  apiCreateLesson,
+  apiUpdateLesson,
+  apiDeleteLesson,
+} from '../../services/api/api';
 
 export default function AdminLessons() {
   const [lessons, setLessons] = useState([]);
@@ -25,34 +31,42 @@ export default function AdminLessons() {
   const [formData, setFormData] = useState({
     title: '',
     course_id: '',
-    duration: ''
+    video_url: '',
+    lesson_order: ''
   });
 
-  // 🔄 جلب الدروس والكورسات
+  // 🔄 Fetch courses and their lessons from the backend API
   const fetchData = async () => {
     try {
       setLoading(true);
 
-      const { data: coursesData, error: coursesError } = await supabase
-        .from('courses')
-        .select('id, title');
-      
-      if (coursesError) throw coursesError;
-      if (coursesData) setCourses(coursesData);
+      const coursesData = await apiGetAllCourses();
+      const coursesList = Array.isArray(coursesData)
+        ? coursesData
+        : (coursesData?.courses || coursesData?.data || []);
+      setCourses(coursesList);
 
-      const { data: lessonsData, error: lessonsError } = await supabase
-        .from('lessons')
-        .select('id, title, course_id, duration'); 
-
-      if (lessonsError) throw lessonsError;
-      
-      if (lessonsData) {
-        setLessons(lessonsData);
+      // The API only exposes lessons per-course, so combine them here.
+      const allLessons = [];
+      for (const course of coursesList) {
+        try {
+          const lessonsRes = await apiGetLessonsForCourse(course.id);
+          const lessonsList = Array.isArray(lessonsRes)
+            ? lessonsRes
+            : (lessonsRes?.lessons || lessonsRes?.data || []);
+          lessonsList.forEach((lesson) => {
+            allLessons.push({ ...lesson, course_id: lesson.course_id || course.id });
+          });
+        } catch (err) {
+          // A single course's lessons failing to load shouldn't break the whole page
+          console.warn(`Could not load lessons for course ${course.id}:`, err.message);
+        }
       }
+      setLessons(allLessons);
 
     } catch (error) {
       console.error('Error fetching data:', error.message);
-      alert('⚠️ خطأ أثناء جلب البيانات: ' + error.message);
+      alert('⚠️ Error loading data: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -62,7 +76,7 @@ export default function AdminLessons() {
     fetchData();
   }, []);
 
-  // 💾 حفظ أو تحديث الدرس
+  // 💾 Save or update a lesson via the backend Lessons API
   const handleSave = async (e) => {
     if (e) e.preventDefault();
     if (!formData.course_id) {
@@ -73,61 +87,43 @@ export default function AdminLessons() {
     try {
       const payload = {
         title: formData.title,
-        course_id: formData.course_id, 
-        duration: formData.duration || '0 mins'
+        course_id: formData.course_id,
+        video_url: formData.video_url || '',
+        lesson_order: formData.lesson_order ? Number(formData.lesson_order) : 0,
       };
 
       if (isEditing) {
-        const { error } = await supabase
-          .from('lessons')
-          .update(payload)
-          .eq('id', currentLessonId);
-
-        if (error) throw error;
-
+        await apiUpdateLesson(currentLessonId, payload);
         setLessons(prev => prev.map(l => l.id === currentLessonId ? { ...l, ...payload } : l));
       } else {
-        const { data, error } = await supabase
-          .from('lessons')
-          .insert([payload])
-          .select('id, title, course_id, duration'); 
+        const created = await apiCreateLesson(payload);
+        const newLesson = created?.lesson || created?.data || created;
 
-        if (error) throw error;
-
-        if (data && data[0]) {
-          setLessons(prev => [...prev, data[0]]);
+        if (newLesson) {
+          setLessons(prev => [...prev, newLesson]);
+        } else {
+          await fetchData();
         }
       }
 
       closeModal();
     } catch (error) {
       console.error('Error saving lesson:', error.message);
-      alert('⚠️ حصل مشكلة أثناء الحفظ في Supabase: ' + error.message);
+      alert('⚠️ Failed to save the lesson: ' + (error?.response?.data?.message || error.message));
     }
   };
 
   const confirmDelete = async () => {
     if (!lessonToDelete) return;
     try {
-      const { data, error } = await supabase
-        .from('lessons')
-        .delete()
-        .eq('id', lessonToDelete.id)
-        .select(); 
-
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        alert(`⚠️ السيرفر لم يجد درس بهذا الـ ID في الداتابيز لحذفه! \n الـ ID المرسل: ${lessonToDelete.id}`);
-        return; 
-      }
+      await apiDeleteLesson(lessonToDelete.id);
 
       setLessons(prev => prev.filter(l => l.id !== lessonToDelete.id));
       closeDeleteModal();
-      
+
     } catch (error) {
       console.error('Error deleting lesson:', error.message);
-      alert('⚠️ فشل الحذف: ' + error.message);
+      alert('⚠️ Failed to delete: ' + (error?.response?.data?.message || error.message));
     }
   };
   
@@ -137,7 +133,8 @@ export default function AdminLessons() {
     setFormData({
       title: lesson.title || '',
       course_id: lesson.course_id || '',
-      duration: lesson.duration || ''
+      video_url: lesson.video_url || '',
+      lesson_order: lesson.lesson_order ?? ''
     });
     setIsModalOpen(true);
   };
@@ -146,7 +143,7 @@ export default function AdminLessons() {
     setIsModalOpen(false);
     setIsEditing(false);
     setCurrentLessonId(null);
-    setFormData({ title: '', course_id: '', duration: '' });
+    setFormData({ title: '', course_id: '', video_url: '', lesson_order: '' });
   };
 
   const openDeleteModal = (lesson) => {
@@ -212,7 +209,7 @@ export default function AdminLessons() {
               <tr>
                 <th style={{ width: '40%' }}>Lesson</th>
                 <th style={{ width: '30%' }}>Course</th>
-                <th style={{ width: '20%' }}>Duration</th>
+                <th style={{ width: '20%' }}>Order</th>
                 <th style={{ width: '10%', textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
@@ -229,7 +226,7 @@ export default function AdminLessons() {
                     <tr key={lesson.id} className={styles.tableRow}>
                       <td className={`py-3 ${styles.lessonTitleText}`}>{lesson.title}</td>
                       <td className={`py-3 ${styles.courseTitleText}`}>{courseObj ? courseObj.title : 'Unknown Course'}</td>
-                      <td className={`py-3 ${styles.durationText}`}>{lesson.duration}</td>
+                      <td className={`py-3 ${styles.durationText}`}>{lesson.lesson_order ?? '-'}</td>
                       <td className="py-3 text-end">
                         <button className="btn btn-link text-info p-1 me-2" title="Edit" onClick={() => openEditModal(lesson)}>
                           <Edit2 size={16} />
@@ -275,8 +272,13 @@ export default function AdminLessons() {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Duration (e.g., "15 mins")</label>
-                  <input type="text" className={styles.formInput} value={formData.duration} onChange={(e) => setFormData({...formData, duration: e.target.value})} placeholder="e.g. 20 mins" />
+                  <label className={styles.formLabel}>Video URL</label>
+                  <input type="text" className={styles.formInput} value={formData.video_url} onChange={(e) => setFormData({...formData, video_url: e.target.value})} placeholder="https://video.com/lesson" />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Lesson Order</label>
+                  <input type="number" className={styles.formInput} value={formData.lesson_order} onChange={(e) => setFormData({...formData, lesson_order: e.target.value})} placeholder="e.g. 1" />
                 </div>
               </div>
               <div className={styles.modalFooter}>
