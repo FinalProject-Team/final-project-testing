@@ -1,244 +1,284 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaUser, FaEnvelope, FaPhoneAlt, FaLock, FaEye, FaEyeSlash, FaUserPlus } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaPhoneAlt, FaLock, FaEye, FaEyeSlash, FaUserPlus, FaArrowLeft } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import styles from './Register.module.css';
 import { registerUser, loginWithGoogle } from "../services/authServices";
 import * as yup from 'yup';
 
 const schema = yup.object().shape({
-  fullName: yup.string().required("Full name is required").min(3),
-  email: yup.string().required().email(),
-  phone: yup.string().required().matches(/^01[0125][0-9]{8}$/),
-  password: yup.string().required().min(6),
-  confirmPassword: yup.string().oneOf([yup.ref('password'), null], "Passwords do not match"),
-  role: yup.string().required("Please select a role"),
+ fullName: yup.string().required("Full name is required").min(3),
+ email: yup.string().required().email(),
+ phone: yup.string().required().matches(/^01[0125][0-9]{8}$/),
+ password: yup.string().required().min(6),
+ confirmPassword: yup
+ .string()
+ .required("Confirm password is required")
+ .oneOf([yup.ref('password')], "Passwords do not match"),
 });
 
 export default function Register() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+ const [showPassword, setShowPassword] = useState(false);
+ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+ const [selectedRole, setSelectedRole] = useState("student");
 
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-    role: "",
-  });
+ const [formData, setFormData] = useState({
+ fullName: "",
+ email: "",
+ phone: "",
+ password: "",
+ confirmPassword: "",
+ });
 
-  const [errors, setErrors] = useState({});
+ const [errors, setErrors] = useState({});
 
-  // toast state (مرة واحدة فقط)
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState("");
+ // toast state (مرة واحدة فقط)
+ const [toastMessage, setToastMessage] = useState("");
+ const [toastType, setToastType] = useState("");
 
-  const navigate = useNavigate();
+ const navigate = useNavigate();
 
-  // hide toast after 4s
-  useEffect(() => {
-    if (toastMessage) {
-      const timer = setTimeout(() => {
-        setToastMessage("");
-        setToastType("");
-      }, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [toastMessage]);
+ // hide toast after 4s
+ useEffect(() => {
+ if (toastMessage) {
+ const timer = setTimeout(() => {
+ setToastMessage("");
+ setToastType("");
+ }, 4000);
+ return () => clearTimeout(timer);
+ }
+ }, [toastMessage]);
 
-  function handleChange(e) {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+ function handleChange(e) {
+ setFormData({
+ ...formData,
+ [e.target.name]: e.target.value,
+ });
 
-    if (errors[e.target.name]) {
-      setErrors({ ...errors, [e.target.name]: "" });
-    }
-  }
+ if (errors[e.target.name]) {
+ setErrors({ ...errors, [e.target.name]: "" });
+ }
+ }
 
-  const handleGoogleLogin = async () => {
-    try {
-      await loginWithGoogle();
-    } catch (error) {
-      setToastType("error");
-      setToastMessage("Google login failed: " + error.message);
-    }
-  };
+ const handleGoogleLogin = async () => {
+ try {
+ await loginWithGoogle();
+ } catch (error) {
+ setToastType("error");
+ setToastMessage("Google login failed: " + error.message);
+ }
+ };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+ e.preventDefault();
 
-    try {
-      await schema.validate(formData, { abortEarly: false });
-      setErrors({});
+ try {
+ await registerUser({
+ full_name: formData.fullName,
+ email: formData.email,
+ password: formData.password,
+ confirmPassword: formData.confirmPassword,
+ phone: formData.phone,
+ role: selectedRole,
+ });
 
-      await registerUser({
-        full_name: formData.fullName,
-        email: formData.email,
-        password: formData.password,
-        phone: formData.phone,
-        role: formData.role,
-      });
+ setToastType("success");
+ setToastMessage("Registration successful! Redirecting to login...");
 
-      setToastType("success");
-      setToastMessage("Registration successful! Redirecting to login...");
+ setTimeout(() => {
+ navigate("/login");
+ }, 2000);
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+ } catch (err) {
+ if (err.name === "ValidationError") {
+ const validationErrors = {};
+ err.inner.forEach((error) => {
+ validationErrors[error.path] = error.message;
+ });
+ setErrors(validationErrors);
+ } else {
+ setToastType("error");
 
-    } catch (err) {
-      if (err.name === "ValidationError") {
-        const validationErrors = {};
-        err.inner.forEach((error) => {
-          validationErrors[error.path] = error.message;
-        });
-        setErrors(validationErrors);
-      } else {
-        setToastType("error");
+ const serverMessage =
+ err.response?.data?.message || err.message || "";
 
-        const serverMessage =
-          err.response?.data?.message || err.message || "";
+ const statusCode = err.response?.status;
 
-        const statusCode = err.response?.status;
+ if (
+ statusCode === 409 ||
+ statusCode === 400 ||
+ serverMessage.toLowerCase().includes("already") ||
+ serverMessage.toLowerCase().includes("exists")
+ ) {
+ setToastMessage("This email is already registered! Try logging in.");
+ } else {
+ setToastMessage(serverMessage || "Registration failed");
+ }
+ }
+ }
+ };
 
-        if (
-          statusCode === 409 ||
-          statusCode === 400 ||
-          serverMessage.toLowerCase().includes("already") ||
-          serverMessage.toLowerCase().includes("exists")
-        ) {
-          setToastMessage("This email is already registered! Try logging in.");
-        } else {
-          setToastMessage(serverMessage || "Registration failed");
-        }
-      }
-    }
-  };
+ return (
+ <div className={styles.pageWrapper}>
+ <div className={styles.glowEffect}></div>
+ <div className={styles.glowEffectLeft}></div>
 
-  return (
-    <div className={styles.container}>
-      <div className={styles.card}>
+ <div className={styles.registerContainer}>
+ {/* Back Button */}
+ <Link to="/login" className={styles.backButton} title="Back to login">
+ <FaArrowLeft /> Back
+ </Link>
 
-        {toastMessage && (
-          <div className={`${styles.toast} ${toastType === 'success' ? styles.toastSuccess : styles.toastError}`}>
-            {toastType === 'success' ? '✅ ' : '❌ '} {toastMessage}
-          </div>
-        )}
+ {/* Brand Section */}
+ <div className={styles.brandSection}>
+ <div className={styles.logoIcon}>⚡</div>
+ <span className={styles.brandName}>CareerTech</span>
+ </div>
 
-        <h1 className={styles.title}>CareerTech</h1>
-        <p className={styles.subtitle}>Create your account</p>
+ {/* Heading */}
+ <div className={styles.headingSection}>
+ <h1 className={styles.welcomeTitle}>Join Our Community</h1>
+ <p className={styles.welcomeSubtitle}>Create an account to get started with CareerTech</p>
+ </div>
 
-        <form className={styles.form} onSubmit={handleSubmit}>
+ {/* Toast Messages */}
+ {toastMessage && (
+ <div className={`${styles.alert} ${toastType === 'success' ? styles.alertSuccess : styles.alertError}`}>
+ <span>{toastType === 'success' ? '✅ ' : '❌ '} {toastMessage}</span>
+ </div>
+ )}
 
-          <div className={styles.inputGroup}>
-            <FaUser className={styles.iconLeft} />
-            <input
-              type="text"
-              className={styles.input}
-              name="fullName"
-              placeholder="Full Name"
-              value={formData.fullName}
-              onChange={handleChange}
-            />
-          </div>
-          {errors.fullName && <span className={styles.errorText}>{errors.fullName}</span>}
+ {/* Card */}
+ <div className={styles.card}>
 
-          <div className={styles.inputGroup}>
-            <FaEnvelope className={styles.iconLeft} />
-            <input
-              type="email"
-              className={styles.input}
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </div>
-          {errors.email && <span className={styles.errorText}>{errors.email}</span>}
+ {/* Google Button */}
+ <button
+ type="button"
+ onClick={handleGoogleLogin}
+ className={styles.googleBtn}
+ >
+ <FcGoogle size={18} /> Sign up with Google
+ </button>
 
-          <div className={styles.inputGroup}>
-            <FaPhoneAlt className={styles.iconLeft} />
-            <input
-              type="tel"
-              className={styles.input}
-              name="phone"
-              placeholder="Phone"
-              value={formData.phone}
-              onChange={handleChange}
-            />
-          </div>
-          {errors.phone && <span className={styles.errorText}>{errors.phone}</span>}
+ <div className={styles.divider}>OR</div>
 
-          <div className={styles.inputGroup}>
-            <FaUser className={styles.iconLeft} />
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className={styles.input}
-            >
-              <option value="" disabled>
-                Select role
-              </option>
-              <option value="student">Student</option>
-              <option value="job_seeker">Job Seeker</option>
-              <option value="employer">Employer</option>
-            </select>
-          </div>
-          {errors.role && <span className={styles.errorText}>{errors.role}</span>}
+ {/* Account Type Selection */}
+ <div className={styles.accountTypeSection}>
+ <label className={styles.accountTypeLabel}>Select Account Type:</label>
+ <div className={styles.accountTypeOptions}>
+ <button
+ type="button"
+ className={`${styles.accountTypeBtn} ${selectedRole === 'student' ? styles.active : ''}`}
+ onClick={() => setSelectedRole('student')}
+ >
+ <span className={styles.roleIcon}>📚</span>
+ <span className={styles.roleName}>Student</span>
+ <span className={styles.roleDesc}>Learn courses & skills</span>
+ </button>
+ <button
+ type="button"
+ className={`${styles.accountTypeBtn} ${selectedRole === 'job_seeker' ? styles.active : ''}`}
+ onClick={() => setSelectedRole('job_seeker')}
+ >
+ <span className={styles.roleIcon}>💼</span>
+ <span className={styles.roleName}>Job Seeker</span>
+ <span className={styles.roleDesc}>Post jobs & hire talent</span>
+ </button>
+ </div>
+ </div>
 
-          <div className={styles.inputGroup}>
-            <FaLock className={styles.iconLeft} />
-            <input
-              type={showPassword ? "text" : "password"}
-              className={`${styles.input} ${styles.inputPassword}`}
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-            <span className={styles.iconRight} onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-          </div>
-          {errors.password && <span className={styles.errorText}>{errors.password}</span>}
+ {/* Form */}
+ <form className={styles.form} onSubmit={handleSubmit}>
 
-          <div className={styles.inputGroup}>
-            <FaLock className={styles.iconLeft} />
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              className={`${styles.input} ${styles.inputPassword}`}
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
-            <span className={styles.iconRight} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-          </div>
-          {errors.confirmPassword && <span className={styles.errorText}>{errors.confirmPassword}</span>}
+ <div className={styles.inputGroup}>
+ <FaUser className={styles.iconLeft} />
+ <input
+ type="text"
+ name="fullName"
+ placeholder="Full Name"
+ value={formData.fullName}
+ onChange={handleChange}
+ />
+ {errors.fullName && <span className={styles.errorText}>{errors.fullName}</span>}
+ </div>
 
-          <button type="submit" className={styles.btn}>
-            <FaUserPlus /> Sign Up
-          </button>
+ <div className={styles.inputGroup}>
+ <FaEnvelope className={styles.iconLeft} />
+ <input
+ type="email"
+ name="email"
+ placeholder="Email Address"
+ value={formData.email}
+ onChange={handleChange}
+ />
+ {errors.email && <span className={styles.errorText}>{errors.email}</span>}
+ </div>
 
-        </form>
+ <div className={styles.inputGroup}>
+ <FaPhoneAlt className={styles.iconLeft} />
+ <input
+ type="tel"
+ name="phone"
+ placeholder="Phone Number (01XXXXXXXXX)"
+ value={formData.phone}
+ onChange={handleChange}
+ />
+ {errors.phone && <span className={styles.errorText}>{errors.phone}</span>}
+ </div>
 
-        <div className={styles.divider}>OR</div>
+ <div className={styles.inputGroup}>
+ <FaLock className={styles.iconLeft} />
+ <input
+ type={showPassword ? "text" : "password"}
+ name="password"
+ placeholder="Password (min 6 characters)"
+ value={formData.password}
+ onChange={handleChange}
+ />
+ <button
+ type="button"
+ className={styles.eyeButton}
+ onClick={() => setShowPassword(!showPassword)}
+ >
+ {showPassword ? <FaEyeSlash /> : <FaEye />}
+ </button>
+ {errors.password && <span className={styles.errorText}>{errors.password}</span>}
+ </div>
 
-        <button onClick={handleGoogleLogin} className={styles.googleBtn}>
-          <FcGoogle /> Continue with Google
-        </button>
+ <div className={styles.inputGroup}>
+ <FaLock className={styles.iconLeft} />
+ <input
+ type={showConfirmPassword ? "text" : "password"}
+ name="confirmPassword"
+ placeholder="Confirm Password"
+ value={formData.confirmPassword}
+ onChange={handleChange}
+ />
+ <button
+ type="button"
+ className={styles.eyeButton}
+ onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+ >
+ {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+ </button>
+ {errors.confirmPassword && <span className={styles.errorText}>{errors.confirmPassword}</span>}
+ </div>
 
-        <p className={styles.footerText}>
-          Already have an account? <Link to="/login">Login</Link>
-        </p>
+ <button type="submit" className={styles.submitBtn}>
+ <FaUserPlus /> Create Account
+ </button>
 
-      </div>
-    </div>
-  );
+ </form>
+
+ </div>
+
+ {/* Footer */}
+ <p className={styles.footerText}>
+ Already have an account? <Link to="/login" className={styles.loginLink}>Sign In</Link>
+ </p>
+
+ </div>
+ </div>
+ );
 }
+

@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
-  "https://final-project-backend-production-214a.up.railway.app";
+  "final-project-backend-production-cd84.up.railway.app";
 
 /* ───────────────── TOKEN ───────────────── */
 
@@ -321,6 +321,24 @@ export async function apiUpdateApplicationStatus(applicationId, status) {
   );
   return res.data;
 }
+
+export async function apiUpdateJob(jobId, payload) {
+  const res = await axios.put(
+    `${BASE_URL}/api/jobs/${jobId}`,
+    payload,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiDeleteJob(jobId) {
+  const res = await axios.delete(
+    `${BASE_URL}/api/jobs/${jobId}`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
 export async function apiGetMyProjects(params = {}) {
   const res = await axios.get(
     `${BASE_URL}/api/projects/my-projects`,
@@ -477,6 +495,91 @@ export async function apiUpdateUserRole(id, role) {
 export async function apiDeleteUser(id) {
   const res = await axios.delete(
     `${BASE_URL}/api/admin/user/${id}`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+/* ───────────────── COMMUNITY ───────────────── */
+
+export async function apiGetAllPosts() {
+  const res = await axios.get(`${BASE_URL}/api/community/posts`);
+  const data = res.data;
+  return Array.isArray(data) ? data : data?.data || [];
+}
+
+export async function apiCreatePost(content, image = '') {
+  const res = await axios.post(
+    `${BASE_URL}/api/community/posts`,
+    { content, image },
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiLikePost(postId) {
+  const res = await axios.patch(
+    `${BASE_URL}/api/community/posts/${postId}/likes`,
+    {},
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiSavePost(postId) {
+  const res = await axios.patch(
+    `${BASE_URL}/api/community/posts/${postId}/save`,
+    {},
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiAddComment(postId, comment) {
+  const res = await axios.post(
+    `${BASE_URL}/api/community/posts/${postId}/comments`,
+    { comment },
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiDeletePost(postId) {
+  const res = await axios.delete(
+    `${BASE_URL}/api/community/posts/${postId}`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function apiGetTrendingPosts() {
+  const res = await axios.get(`${BASE_URL}/api/community/trending`);
+  const data = res.data;
+  return Array.isArray(data) ? data : data?.data || [];
+}
+
+export async function apiGetCommunityLeaderboard() {
+  const res = await axios.get(`${BASE_URL}/api/community/leaderboard`);
+  const data = res.data;
+  return Array.isArray(data) ? data : data?.data || [];
+}
+
+export async function apiGetCommunityEvents() {
+  const res = await axios.get(`${BASE_URL}/api/community/events`);
+  const data = res.data;
+  return Array.isArray(data) ? data : data?.data || [];
+}
+
+export async function apiGetSuggestedMembers() {
+  const res = await axios.get(`${BASE_URL}/api/community/members/suggested`);
+  const data = res.data;
+  return Array.isArray(data) ? data : data?.data || [];
+}
+
+export async function apiFollowUser(userId) {
+  const res = await axios.post(
+    `${BASE_URL}/api/community/follow/${userId}`,
+    {},
     { headers: authHeaders() }
   );
   return res.data;

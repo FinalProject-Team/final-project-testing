@@ -63,6 +63,7 @@ import JobsPage from "./pages/Jobs/JobsPage.jsx";
 import PublicJobsPage from "./pages/Jobs/PublicJobsPage.jsx";
 import Projects from "./pages/Projects/Projects.jsx";
 import NormalUserDashboard from "./pages/Dashboard/NormalUserDashboard";
+import EmployerDashboard from "./pages/Dashboard/EmployerDashboard";
 
 /* Jobs & Chat */
 import MyJobsPage from "./pages/Jobs/MyJobsPage.jsx";
@@ -232,6 +233,12 @@ export default function App() {
           )
         },
         { path: "jobs", element: <JobsPage /> },
+        { path: "employer", element: (
+            <ProtectedRoute allowedRoles={["employer"]}>
+              <EmployerDashboard />
+            </ProtectedRoute>
+          )
+        },
         { path: "my-jobs", element: <MyJobsPage /> },
         { path: "applications", element: <Applications /> },
         { path: "progress", element: <ProgressPage /> },

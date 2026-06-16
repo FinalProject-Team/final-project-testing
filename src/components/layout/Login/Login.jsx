@@ -210,15 +210,29 @@ export default function Login() {
     setAuthError('');
     try {
       const result = await signInWithEmail(data.email, data.password);
-      const role = result?.backendRole;
-      const returnPath = sessionStorage.getItem('returnPath') || location.state?.from?.pathname;
-      if (returnPath) {
-        sessionStorage.removeItem('returnPath');
-        return navigate(returnPath);
-      }
-      if (role === 'admin') return navigate('/admin');
-      if (role === 'instructor') return navigate('/instructor/dashboard');
-      navigate('/');
+const role = result?.backendRole;
+
+if (role === 'admin') {
+  return navigate('/admin');
+}
+
+if (role === 'instructor') {
+  return navigate('/instructor/dashboard');
+}
+
+if (role === 'employer') {
+  return navigate('/dashboard/employer');
+}
+
+if (role === 'job_seeker' || role === 'normal_user') {
+  return navigate('/dashboard/normal-user');
+}
+
+if (role === 'student') {
+  return navigate('/dashboard/dashboard');
+}
+
+navigate('/');
     } catch (error) {
       setAuthError(
         error.message === 'Invalid login credentials'

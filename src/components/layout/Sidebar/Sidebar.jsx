@@ -26,14 +26,11 @@ const STUDENT_LINKS = [
   { to: '/dashboard/my-chats',     icon: <MdMessage size={18} />,        label: 'Messages' },
 ];
 
-const JOB_SEEKER_LINKS = [
-  { to: '/dashboard/dashboard',    icon: <MdDashboard size={18} />,      label: 'Dashboard' },
-  { to: '/dashboard/profile',      icon: <FaUser size={16} />,           label: 'Profile' },
-  { to: '/dashboard/jobs',         icon: <BsBriefcaseFill size={16} />,  label: 'Jobs' },
-  { to: '/dashboard/my-jobs',      icon: <FaBriefcase size={16} />,      label: 'My Jobs' },
-  { to: '/dashboard/applications', icon: <FaFolderOpen size={16} />,     label: 'Applications' },
-  // Student-only links removed for job seekers
-  { to: '/dashboard/my-chats',     icon: <MdMessage size={18} />,        label: 'Messages' },
+const EMPLOYER_LINKS = [
+  { to: '/dashboard/employer',       icon: <FaBriefcase size={16} />,      label: 'Employer Dashboard' },
+  { to: '/dashboard/my-jobs',        icon: <FaBriefcase size={16} />,      label: 'My Jobs' },
+  { to: '/dashboard/applications',   icon: <FaFolderOpen size={16} />,     label: 'Applications' },
+  { to: '/dashboard/my-chats',       icon: <MdMessage size={18} />,        label: 'Messages' },
 ];
 
 // normal_user: can browse jobs, apply, view status, and chat if accepted
@@ -49,7 +46,8 @@ export default function Sidebar() {
   const navigate = useNavigate();
 
   const links =
-    role === 'job_seeker'   ? JOB_SEEKER_LINKS :
+    role === 'employer'      ? EMPLOYER_LINKS :
+    role === 'job_seeker'   ? NORMAL_USER_LINKS :
     role === 'normal_user'  ? NORMAL_USER_LINKS :
     STUDENT_LINKS;
 

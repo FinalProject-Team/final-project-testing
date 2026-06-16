@@ -1,137 +1,153 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { POSTS_DATA } from "../data/communityData";
+import {
+  apiGetAllPosts,
+  apiCreatePost,
+  apiLikePost,
+  apiSavePost,
+  apiAddComment,
+  apiDeletePost,
+} from "../services/api/api";
 
 // ─────────────────────────────────────────────────────
 //  Global posts state — all mutations live here.
-//  TODO: Replace each action with real API calls from
-//        src/services/postService.js when backend is ready
+//  Connected to real API endpoints via services/api/api.js
 // ─────────────────────────────────────────────────────
 
 const PostsContext = createContext(null);
 
 export function PostsProvider({ children }) {
-  const [posts, setPosts] = useState(() => {
-    try {
-      const cached = localStorage.getItem("ct_posts_state");
-      if (cached) return JSON.parse(cached);
-    } catch { /* ignore */ }
-    return POSTS_DATA;
-  });
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Persist local state so refreshes don't lose interactions
+  // Fetch posts from API on mount
   useEffect(() => {
-    localStorage.setItem("ct_posts_state", JSON.stringify(posts));
-  }, [posts]);
+    loadPosts();
+  }, []);
+
+  async function loadPosts() {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await apiGetAllPosts();
+      setPosts(Array.isArray(data) ? data : data?.posts || POSTS_DATA);
+    } catch (err) {
+      console.error("Failed to load posts:", err);
+      setError(err.message);
+      // Fallback to mock data on error
+      setPosts(POSTS_DATA);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   // ── Like ──────────────────────────────────────────
-  function toggleLike(postId) {
-    // TODO: PATCH /api/posts/:id/like
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id !== postId ? p : {
-          ...p,
-          liked: !p.liked,
-          likes: p.liked ? p.likes - 1 : p.likes + 1,
-        }
-      )
-    );
+  async function toggleLike(postId) {
+    try {
+      await apiLikePost(postId);
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id !== postId ? p : {
+            ...p,
+            liked: !p.liked,
+            likes: p.liked ? p.likes - 1 : p.likes + 1,
+          }
+        )
+      );
+    } catch (err) {
+      console.error("Failed to like post:", err);
+    }
   }
 
   // ── Save ──────────────────────────────────────────
-  function toggleSave(postId) {
-    // TODO: PATCH /api/posts/:id/save
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id !== postId ? p : { ...p, saved: !p.saved }
-      )
-    );
-  }
-
-  // ── Vote on Poll ──────────────────────────────────
-  function votePoll(postId, optionIndex) {
-    // TODO: POST /api/posts/:id/poll/vote { optionIndex }
-    setPosts((prev) =>
-      prev.map((p) => {
-        if (p.id !== postId || !p.poll || p.poll.voted) return p;
-        const options = p.poll.options.map((opt, i) =>
-          i === optionIndex
-            ? { ...opt, votes: opt.votes + 1 }
-            : opt
-        );
-        const total = options.reduce((sum, o) => sum + o.votes, 0);
-        const withPercent = options.map((o) => ({
-          ...o,
-          percent: Math.round((o.votes / total) * 100),
-        }));
-        return {
-          ...p,
-          poll: { ...p.poll, options: withPercent, totalVotes: total, voted: optionIndex },
-        };
-      })
-    );
+  async function toggleSave(postId) {
+    try {
+      await apiSavePost(postId);
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id !== postId ? p : { ...p, saved: !p.saved }
+        )
+      );
+    } catch (err) {
+      console.error("Failed to save post:", err);
+    }
   }
 
   // ── Add Comment ───────────────────────────────────
-  function addComment(postId, commentText, user) {
-    // TODO: POST /api/posts/:id/comments { text }
+  async function addComment(postId, commentText, user) {
     if (!commentText.trim()) return;
-    const newComment = {
-      id: Date.now(),
-      author: { name: user.name, avatar: user.avatar, role: user.role },
-      text: commentText.trim(),
-      timeAgo: "just now",
-      likes: 0,
-      liked: false,
-    };
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id !== postId ? p : {
-          ...p,
-          comments: p.comments + 1,
-          commentList: [newComment, ...(p.commentList || [])],
-        }
-      )
-    );
+    try {
+      await apiAddComment(postId, commentText);
+      const newComment = {
+        id: Date.now(),
+        author: { name: user.name, avatar: user.avatar, role: user.role },
+        text: commentText.trim(),
+        timeAgo: "just now",
+        likes: 0,
+        liked: false,
+      };
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id !== postId ? p : {
+            ...p,
+            comments: p.comments + 1,
+            commentList: [newComment, ...(p.commentList || [])],
+          }
+        )
+      );
+    } catch (err) {
+      console.error("Failed to add comment:", err);
+    }
   }
 
   // ── Add Post ──────────────────────────────────────
-  function addPost(postData, user) {
-    // TODO: POST /api/posts { type, content, tags, image }
-    const newPost = {
-      id: Date.now(),
-      type: postData.type || "Discussion",
-      author: {
-        name: user.name,
-        role: user.role,
-        avatar: user.avatar,
-        verified: user.verified || false,
-        level: user.level || 1,
-      },
-      timeAgo: "just now",
-      content: postData.content,
-      tags: postData.tags || [],
-      image: postData.image || null,
-      likes: 0,
-      comments: 0,
-      saves: 0,
-      liked: false,
-      saved: false,
-      commentList: [],
-      ...(postData.poll ? { poll: postData.poll } : {}),
-    };
-    setPosts((prev) => [newPost, ...prev]);
-    return newPost;
+  async function addPost(postData, user) {
+    try {
+      const newPostFromApi = await apiCreatePost(postData.content, postData.image || "");
+      const newPost = {
+        id: newPostFromApi.id || Date.now(),
+        type: postData.type || "Discussion",
+        author: {
+          name: user.name,
+          role: user.role,
+          avatar: user.avatar,
+          verified: user.verified || false,
+          level: user.level || 1,
+        },
+        timeAgo: "just now",
+        content: postData.content,
+        tags: postData.tags || [],
+        image: postData.image || null,
+        likes: 0,
+        comments: 0,
+        saves: 0,
+        liked: false,
+        saved: false,
+        commentList: [],
+        ...(postData.poll ? { poll: postData.poll } : {}),
+      };
+      setPosts((prev) => [newPost, ...prev]);
+      return newPost;
+    } catch (err) {
+      console.error("Failed to create post:", err);
+    }
   }
 
   // ── Delete Post ───────────────────────────────────
-  function deletePost(postId) {
-    // TODO: DELETE /api/posts/:id
-    setPosts((prev) => prev.filter((p) => p.id !== postId));
+  async function deletePost(postId) {
+    try {
+      await apiDeletePost(postId);
+      setPosts((prev) => prev.filter((p) => p.id !== postId));
+    } catch (err) {
+      console.error("Failed to delete post:", err);
+    }
   }
 
   return (
     <PostsContext.Provider value={{
-      posts, toggleLike, toggleSave, votePoll, addComment, addPost, deletePost,
+      posts, loading, error, loadPosts,
+      toggleLike, toggleSave, addComment, addPost, deletePost,
     }}>
       {children}
     </PostsContext.Provider>

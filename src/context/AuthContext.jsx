@@ -167,11 +167,10 @@ console.log('Backend User:', backendUser);
     if (!user) return '/';
     if (role === 'admin') return '/admin';
     if (role === 'instructor') return '/instructor/dashboard';
-    // route normal_user to their own dashboard; students keep the main dashboard
+    if (role === 'employer') return '/dashboard/employer';
     if (role === 'job_seeker') return '/dashboard/normal-user';
     if (role === 'student') return '/dashboard/dashboard';
-      return '/dashboard/normal-user';
-
+    return '/dashboard/dashboard';
   };
 
   // Helper to check if user can apply for jobs
