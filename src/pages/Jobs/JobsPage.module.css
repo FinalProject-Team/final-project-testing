@@ -57,10 +57,11 @@ body::before {
 
 /* Layout */
 .page {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 32px 28px;
-  min-height: 100vh;
+ width: 100%;
+ max-width: 1400px; /* أو 100% لو عايزاه full stretch */
+ margin: 0 auto;
+ padding: 32px 28px;
+ min-height: 100vh;
 }
 
 .body {
