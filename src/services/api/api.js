@@ -327,7 +327,11 @@ export async function apiGetMyProjects(params = {}) {
     { params, headers: authHeaders() }
   );
 
-  return res.data;
+  const data = res.data;
+  if (Array.isArray(data)) {
+    return data;
+  }
+  return data?.data || data?.projects || [];
 }
   /* ───────────────── LEADERBOARD & RANKINGS ───────────────── */
 
@@ -494,7 +498,7 @@ export async function apiGetLessonById(id) {
 export async function apiGetAllProjects(params = {}) {
   const res = await axios.get(`${BASE_URL}/api/projects`, { params });
   const data = res.data;
-  return data?.data || data?.projects || data;
+  return data?.data || data?.projects || data || [];
 }
 
 export async function apiGetProjectById(id) {

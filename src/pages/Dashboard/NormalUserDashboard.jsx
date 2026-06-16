@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { apiGetMe, apiGetMyApplications } from '../../services/api/api';
 import styles from './NormalUserDashboard.module.css';
 
@@ -8,17 +9,27 @@ export default function NormalUserDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const { role } = useAuth();
+
   useEffect(() => {
     let mounted = true;
     const load = async () => {
       try {
         setLoading(true);
         const me = await apiGetMe();
-        const apps = await apiGetMyApplications();
+        let apps = [];
+
+        if (role === 'job_seeker') {
+          // Job seekers do not use applicant-only API calls here.
+          apps = [];
+        } else {
+          const response = await apiGetMyApplications();
+          apps = Array.isArray(response) ? response : (response?.data || response?.applications || []);
+        }
+
         if (!mounted) return;
         setProfile(me?.profile || me?.user || me || null);
-        // apps may be array of applications; ensure array
-        setApplications(Array.isArray(apps) ? apps : (apps?.data || apps?.applications || []));
+        setApplications(apps);
       } catch (err) {
         if (!mounted) return;
         setError(err?.message || String(err));

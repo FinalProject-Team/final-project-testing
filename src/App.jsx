@@ -219,8 +219,18 @@ export default function App() {
           )
         },
         { path: "jobs", element: <JobsPage /> },
-        { path: "my-jobs", element: <MyJobsPage /> },
-        { path: "applications", element: <Applications /> },
+        { path: "my-jobs", element: (
+            <ProtectedRoute allowedRoles={["job_seeker"]}>
+              <MyJobsPage />
+            </ProtectedRoute>
+          )
+        },
+        { path: "applications", element: (
+            <ProtectedRoute allowedRoles={["job_seeker"]}>
+              <Applications />
+            </ProtectedRoute>
+          )
+        },
         { path: "progress", element: <ProgressPage /> },
         { path: "softSkills", element: <SoftSkills /> },
         { path: "ranking", element: <Ranking /> },

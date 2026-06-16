@@ -35,7 +35,7 @@ export default function JobsPage() {
       try {
         const [jobsRes, appsRes] = await Promise.allSettled([
           apiGetAllJobs(),
-          isAuthenticated ? apiGetMyApplications() : Promise.resolve([]),
+          isAuthenticated && !isJobSeeker ? apiGetMyApplications() : Promise.resolve([]),
         ]);
         if (!mounted.current) return;
         if (jobsRes.status === 'fulfilled') {
