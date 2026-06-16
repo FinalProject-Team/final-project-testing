@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaUser, FaEnvelope, FaPhoneAlt, FaLock, FaEye, FaEyeSlash, FaUserPlus, FaArrowLeft } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaPhoneAlt, FaLock, FaEye, FaEyeSlash, FaUserPlus } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import styles from './Register.module.css';
 import { registerUser, loginWithGoogle } from "../services/authServices";
@@ -20,7 +20,6 @@ const schema = yup.object().shape({
 export default function Register() {
  const [showPassword, setShowPassword] = useState(false);
  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
- const [selectedRole, setSelectedRole] = useState("student");
 
  const [formData, setFormData] = useState({
  fullName: "",
@@ -79,7 +78,7 @@ export default function Register() {
  password: formData.password,
  confirmPassword: formData.confirmPassword,
  phone: formData.phone,
- role: selectedRole,
+ role: "student",
  });
 
  setToastType("success");
@@ -119,111 +118,33 @@ export default function Register() {
  };
 
  return (
- <div className={styles.pageWrapper}>
- <div className={styles.glowEffect}></div>
- <div className={styles.glowEffectLeft}></div>
+ <div className={styles.container}>
+ <div className={styles.card}>
 
- <div className={styles.registerContainer}>
- {/* Back Button */}
- <Link to="/login" className={styles.backButton} title="Back to login">
- <FaArrowLeft /> Back
- </Link>
-
- {/* Brand Section */}
- <div className={styles.brandSection}>
- <div className={styles.logoIcon}>⚡</div>
- <span className={styles.brandName}>CareerTech</span>
- </div>
-
- {/* Heading */}
- <div className={styles.headingSection}>
- <h1 className={styles.welcomeTitle}>Join Our Community</h1>
- <p className={styles.welcomeSubtitle}>Create an account to get started with CareerTech</p>
- </div>
-
- {/* Toast Messages */}
  {toastMessage && (
- <div className={`${styles.alert} ${toastType === 'success' ? styles.alertSuccess : styles.alertError}`}>
- <span>{toastType === 'success' ? '✅ ' : '❌ '} {toastMessage}</span>
+ <div className={`${styles.toast} ${toastType === 'success' ? styles.toastSuccess : styles.toastError}`}>
+ {toastType === 'success' ? '✅ ' : '❌ '} {toastMessage}
  </div>
  )}
 
- {/* Card */}
- <div className={styles.card}>
+ <h1 className={styles.title}>CareerTech</h1>
+ <p className={styles.subtitle}>Create your account</p>
 
- {/* Google Button */}
- <button
- type="button"
- onClick={handleGoogleLogin}
- className={styles.googleBtn}
- >
- <FcGoogle size={18} /> Sign up with Google
- </button>
-
- <div className={styles.divider}>OR</div>
-
- {/* Account Type Selection */}
- <div className={styles.accountTypeSection}>
- <label className={styles.accountTypeLabel}>Select Account Type:</label>
- <div className={styles.accountTypeOptions}>
- <button
- type="button"
- className={`${styles.accountTypeBtn} ${selectedRole === 'student' ? styles.active : ''}`}
- onClick={() => setSelectedRole('student')}
- >
- <span className={styles.roleIcon}>📚</span>
- <span className={styles.roleName}>Student</span>
- <span className={styles.roleDesc}>Learn courses & skills</span>
- </button>
- <button
- type="button"
- className={`${styles.accountTypeBtn} ${selectedRole === 'job_seeker' ? styles.active : ''}`}
- onClick={() => setSelectedRole('job_seeker')}
- >
- <span className={styles.roleIcon}>💼</span>
- <span className={styles.roleName}>Job Seeker</span>
- <span className={styles.roleDesc}>Post jobs & hire talent</span>
- </button>
- </div>
- </div>
-
- {/* Form */}
  <form className={styles.form} onSubmit={handleSubmit}>
 
  <div className={styles.inputGroup}>
  <FaUser className={styles.iconLeft} />
- <input
- type="text"
- name="fullName"
- placeholder="Full Name"
- value={formData.fullName}
- onChange={handleChange}
- />
- {errors.fullName && <span className={styles.errorText}>{errors.fullName}</span>}
+ <input name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} />
  </div>
 
  <div className={styles.inputGroup}>
  <FaEnvelope className={styles.iconLeft} />
- <input
- type="email"
- name="email"
- placeholder="Email Address"
- value={formData.email}
- onChange={handleChange}
- />
- {errors.email && <span className={styles.errorText}>{errors.email}</span>}
+ <input name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
  </div>
 
  <div className={styles.inputGroup}>
  <FaPhoneAlt className={styles.iconLeft} />
- <input
- type="tel"
- name="phone"
- placeholder="Phone Number (01XXXXXXXXX)"
- value={formData.phone}
- onChange={handleChange}
- />
- {errors.phone && <span className={styles.errorText}>{errors.phone}</span>}
+ <input name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} />
  </div>
 
  <div className={styles.inputGroup}>
@@ -231,18 +152,13 @@ export default function Register() {
  <input
  type={showPassword ? "text" : "password"}
  name="password"
- placeholder="Password (min 6 characters)"
+ placeholder="Password"
  value={formData.password}
- onChange={handleChange}
+			 onChange={handleChange}
  />
- <button
- type="button"
- className={styles.eyeButton}
- onClick={() => setShowPassword(!showPassword)}
- >
+		  <span onClick={() => setShowPassword(!showPassword)}>
  {showPassword ? <FaEyeSlash /> : <FaEye />}
- </button>
- {errors.password && <span className={styles.errorText}>{errors.password}</span>}
+ </span>
  </div>
 
  <div className={styles.inputGroup}>
@@ -252,33 +168,30 @@ export default function Register() {
  name="confirmPassword"
  placeholder="Confirm Password"
  value={formData.confirmPassword}
- onChange={handleChange}
+		 onChange={handleChange}
  />
- <button
- type="button"
- className={styles.eyeButton}
- onClick={() => setShowConfirmPassword(!showConfirmPassword)}
- >
+ <span onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
- </button>
- {errors.confirmPassword && <span className={styles.errorText}>{errors.confirmPassword}</span>}
+ </span>
  </div>
 
- <button type="submit" className={styles.submitBtn}>
- <FaUserPlus /> Create Account
+ <button type="submit" className={styles.btn}>
+ <FaUserPlus /> Sign Up
  </button>
 
  </form>
 
- </div>
+ <div className={styles.divider}>OR</div>
 
- {/* Footer */}
+ <button onClick={handleGoogleLogin} className={styles.googleBtn}>
+ <FcGoogle /> Continue with Google
+ </button>
+
  <p className={styles.footerText}>
- Already have an account? <Link to="/login" className={styles.loginLink}>Sign In</Link>
+ Already have an account? <Link to="/login">Login</Link>
  </p>
 
  </div>
  </div>
  );
 }
-
