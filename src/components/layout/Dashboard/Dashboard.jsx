@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Dashboard.module.css';
-import { getDashboardStats } from '../services/dashboardServices';
 import {
+  apiGetDashboardStats,
   apiGetRecentActivity,
   apiGetContinueLearning,
 } from '../../../services/api/api';
@@ -14,74 +14,26 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchAll = async () => {
-      // Fetch Dashboard Stats
       try {
-        const data = await getDashboardStats();
-        console.log('[Dashboard] Raw stats response:', data);
-        
-        // Ensure proper structure
-        const normalizedStats = {
-          user: data?.user || { full_name: 'Developer', level: 'Mid-Level Developer' },
-          scheduled: data?.scheduled || { lessons: 0, assessments: 0 },
-          xp: data?.xp || { total: 0, today: 0 },
-          courses: data?.courses || { done: 0, total: 0, percentage: 0 },
-          jobs: data?.jobs || { matches: 0, newToday: 0 },
-          streak: data?.streak || { days: 0 }
-        };
-        
-        console.log('[Dashboard] Normalized stats:', normalizedStats);
-        setStats(normalizedStats);
+        const data = await apiGetDashboardStats();
+        setStats(data);
       } catch (error) {
-        console.error('[Dashboard] Error fetching stats:', error);
-        setStats({
-          user: { full_name: 'Developer', level: 'Mid-Level Developer' },
-          scheduled: { lessons: 0, assessments: 0 },
-          xp: { total: 0, today: 0 },
-          courses: { done: 0, total: 0, percentage: 0 },
-          jobs: { matches: 0, newToday: 0 },
-          streak: { days: 0 }
-        });
+        console.error("Error fetching dashboard stats:", error);
       }
 
-      // Fetch Recent Activity
       try {
-        const activityRes = await apiGetRecentActivity();
-        console.log('[Dashboard] Raw activity response:', activityRes);
-        
-        let list = [];
-        if (Array.isArray(activityRes)) {
-          list = activityRes;
-        } else if (activityRes?.data && Array.isArray(activityRes.data)) {
-          list = activityRes.data;
-        } else if (activityRes?.data && typeof activityRes.data === 'object') {
-          list = Array.isArray(activityRes.data) ? activityRes.data : [];
-        }
-        
-        console.log('[Dashboard] Processed activity list:', list);
+        const activity = await apiGetRecentActivity();
+        const list = Array.isArray(activity) ? activity : activity?.data || [];
         setRecentActivity(list.slice(0, 3));
-      } catch (error) {
-        console.error('[Dashboard] Error fetching activity:', error);
+      } catch {
         setRecentActivity([]);
       }
 
-      // Fetch Continue Learning
       try {
-        const learningRes = await apiGetContinueLearning();
-        console.log('[Dashboard] Raw learning response:', learningRes);
-        
-        let list = [];
-        if (Array.isArray(learningRes)) {
-          list = learningRes;
-        } else if (learningRes?.data && Array.isArray(learningRes.data)) {
-          list = learningRes.data;
-        } else if (learningRes?.data && typeof learningRes.data === 'object') {
-          list = Array.isArray(learningRes.data) ? learningRes.data : [];
-        }
-        
-        console.log('[Dashboard] Processed learning list:', list);
+        const cl = await apiGetContinueLearning();
+        const list = Array.isArray(cl) ? cl : cl?.data || [];
         setContinueLearning(list.slice(0, 3));
-      } catch (error) {
-        console.error('[Dashboard] Error fetching learning:', error);
+      } catch {
         setContinueLearning([]);
       }
 
@@ -95,7 +47,6 @@ export default function Dashboard() {
     return <div style={{ padding: '20px', color: 'white' }}>Loading Dashboard...</div>;
   }
 
-  // Use stats if loaded, otherwise use defaults
   const displayData = stats || {
     user: { full_name: "Developer", level: "Mid-Level Developer" },
     scheduled: { lessons: 0, assessments: 0 },
@@ -104,10 +55,6 @@ export default function Dashboard() {
     jobs: { matches: 0, newToday: 0 },
     streak: { days: 0 }
   };
-
-  console.log('[Dashboard] Display data:', displayData);
-  console.log('[Dashboard] Recent activity items:', recentActivity);
-  console.log('[Dashboard] Continue learning items:', continueLearning);
 
   return (
     <div className={styles.dashboardContainer}>

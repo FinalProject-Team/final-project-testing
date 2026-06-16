@@ -14,14 +14,24 @@ export default function Ranking() {
 
   useEffect(() => {
     const loadRankingData = async () => {
-      try {
-        setLoading(true);
-        const [rankingData, meData] = await Promise.all([
-          apiGetLeaderboard(),
-          apiGetMyRank(),
-        ]);
+      setLoading(true);
 
-        if (rankingData && rankingData.length > 0) {
+      // Run independently: an unauthenticated/expired-token /ranking/me (401)
+      // must NOT wipe out a perfectly valid /ranking leaderboard response.
+      const [rankingResult, meResult] = await Promise.allSettled([
+        apiGetLeaderboard(),
+        apiGetMyRank(),
+      ]);
+
+      if (rankingResult.status === "fulfilled") {
+        // Normalize: backend may return the array directly, or wrapped as
+        // { data: [...] } / { ranking: [...] } / { users: [...] }
+        const raw = rankingResult.value;
+        const rankingData = Array.isArray(raw)
+          ? raw
+          : raw?.data || raw?.ranking || raw?.users || raw?.leaderboard || [];
+
+        if (rankingData.length > 0) {
           const formattedUsers = rankingData.map((u) => ({
             id: u.id,
             name: u.full_name || u.name || "Student",
@@ -36,8 +46,16 @@ export default function Ranking() {
         } else {
           setUsers(defaultRankingUsers);
         }
+      } else {
+        console.warn("Failed to load leaderboard from API, using mock:", rankingResult.reason);
+        setUsers(defaultRankingUsers);
+      }
 
-        if (meData) {
+      if (meResult.status === "fulfilled") {
+        const raw = meResult.value;
+        const meData = raw?.data || raw?.user || raw;
+
+        if (meData && (meData.id || meData.full_name || meData.name)) {
           setMe({
             id: meData.id,
             name: meData.full_name || meData.name || "Me",
@@ -52,13 +70,13 @@ export default function Ranking() {
         } else {
           setMe(defaultCurrentUser);
         }
-      } catch (err) {
-        console.warn("Failed to load ranking from API, using mock:", err);
-        setUsers(defaultRankingUsers);
+      } else {
+        // Expected for logged-out users (401) — not a real error, just fall back.
+        console.warn("Failed to load my rank from API, using mock:", meResult.reason);
         setMe(defaultCurrentUser);
-      } finally {
-        setLoading(false);
       }
+
+      setLoading(false);
     };
     loadRankingData();
   }, []);

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import styles from './Courses.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { apiGetAllCourses } from '../../services/api/api';
+import { apiGetAllCourses, BASE_URL } from '../../services/api/api';
 
 
 export default function Courses() {
@@ -40,8 +40,18 @@ export default function Courses() {
     'https://via.placeholder.com/480x270?text=Course+3',
   ];
 
-  const getThumbnail = (course, index) =>
-    course.thumbnail || FALLBACK_THUMBNAILS[index % FALLBACK_THUMBNAILS.length];
+  const getThumbnail = (course, index) => {
+    const t = course.thumbnail || course.image || course.image_url;
+    if (t) {
+      // if absolute url, use as-is
+      if (/^(https?:)?\/\//i.test(t)) return t;
+      // otherwise prefix with BASE_URL
+      const prefix = BASE_URL.replace(/\/$/, '');
+      const path = t.startsWith('/') ? t : `/${t}`;
+      return `${prefix}${path}`;
+    }
+    return FALLBACK_THUMBNAILS[index % FALLBACK_THUMBNAILS.length];
+  };
 
   const formatPrice = (price) => {
     if (!price || price === 0) return 'Free';

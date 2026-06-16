@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/global.css";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
@@ -58,6 +58,7 @@ import XPGrowth from "./components/Progress/XPGrowth.jsx";
 import CourseCompletion from "./components/Progress/CourseCompletion.jsx";
 import ProgressperCourse from "./components/Progress/ProgressperCourse";
 import DailyLearningHours from "./components/Progress/DailyLearningHours";
+import { apiGetProgressDashboard } from "./services/api/api";
 import JobsPage from "./pages/Jobs/JobsPage.jsx";
 import PublicJobsPage from "./pages/Jobs/PublicJobsPage.jsx";
 import Projects from "./pages/Projects/Projects.jsx";
@@ -97,19 +98,31 @@ const Profile = () => (
 
 /* ---------------- PROGRESS ---------------- */
 
-const ProgressPage = () => (
-  <div style={{ backgroundColor: "#060814", minHeight: "100vh", padding: "40px 20px", color: "white" }}>
-    <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "24px" }}>
-      <ProfileMetrics />
-      <div className="charts-layout-grid">
-        <XPGrowth />
-        <CourseCompletion />
+const ProgressPage = () => {
+  const [progressData, setProgressData] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    apiGetProgressDashboard()
+      .then((data) => { if (mounted) setProgressData(data); })
+      .catch((err) => console.error("Failed to load progress dashboard:", err));
+    return () => { mounted = false; };
+  }, []);
+
+  return (
+    <div style={{ backgroundColor: "#060814", minHeight: "100vh", padding: "40px 20px", color: "white" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "24px" }}>
+        <ProfileMetrics data={progressData?.profile} />
+        <div className="charts-layout-grid">
+          <XPGrowth data={progressData?.xp_growth} />
+          <CourseCompletion data={progressData?.course_completion} />
+        </div>
+        <ProgressperCourse data={progressData?.progress_per_course} />
+        <DailyLearningHours data={progressData?.daily_learning_hours} />
       </div>
-      <ProgressperCourse />
-      <DailyLearningHours />
     </div>
-  </div>
-);
+  );
+};
 
 /* ---------------- APP ---------------- */
 
@@ -219,18 +232,8 @@ export default function App() {
           )
         },
         { path: "jobs", element: <JobsPage /> },
-        { path: "my-jobs", element: (
-            <ProtectedRoute allowedRoles={["job_seeker"]}>
-              <MyJobsPage />
-            </ProtectedRoute>
-          )
-        },
-        { path: "applications", element: (
-            <ProtectedRoute allowedRoles={["job_seeker"]}>
-              <Applications />
-            </ProtectedRoute>
-          )
-        },
+        { path: "my-jobs", element: <MyJobsPage /> },
+        { path: "applications", element: <Applications /> },
         { path: "progress", element: <ProgressPage /> },
         { path: "softSkills", element: <SoftSkills /> },
         { path: "ranking", element: <Ranking /> },

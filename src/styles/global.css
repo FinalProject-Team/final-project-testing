@@ -108,6 +108,7 @@
 html, body {
   width: 100%;
   min-height: 100%;
+  min-width: 1280px; /* force desktop-size layout app-wide; smaller viewports scroll horizontally instead of reflowing */
   transition: background-color var(--transition), color var(--transition);
 }
 
@@ -120,7 +121,11 @@ body {
   color: var(--text-primary);
   font-size: 16px;
   line-height: 1.5;
-  overflow-x: hidden;
+  overflow-x: auto; /* was hidden — now scrolls instead of clipping content below 1280px */
+}
+
+#root {
+  min-width: 1280px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -184,4 +189,3 @@ html { scroll-behavior: smooth; }
   --radius-lg: 16px;
   --radius-xl: 22px;
 }
- 

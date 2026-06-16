@@ -32,9 +32,7 @@ const JOB_SEEKER_LINKS = [
   { to: '/dashboard/jobs',         icon: <BsBriefcaseFill size={16} />,  label: 'Jobs' },
   { to: '/dashboard/my-jobs',      icon: <FaBriefcase size={16} />,      label: 'My Jobs' },
   { to: '/dashboard/applications', icon: <FaFolderOpen size={16} />,     label: 'Applications' },
-  { to: '/dashboard/projects',     icon: <FaFolderOpen size={16} />,     label: 'Projects' },
-  { to: '/dashboard/ranking',      icon: <MdLeaderboard size={18} />,    label: 'Ranking' },
-  { to: '/dashboard/careertwin',   icon: <FaRobot size={16} />,          label: 'Career Twin' },
+  // Student-only links removed for job seekers
   { to: '/dashboard/my-chats',     icon: <MdMessage size={18} />,        label: 'Messages' },
 ];
 
